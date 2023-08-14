@@ -12,8 +12,34 @@
 () recv_internal() {
 }
 
+(int) tlen (tuple t) asm "TLEN";
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
+
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
-}
+	tuple matrixC = empty_tuple();
+	int mlen = tlen(matrixA);
+	int x = 0;
 
+	while (x < mlen) {
+		int y = 0;
+		while (y < mlen) {
+			int sum = 0;
+			int k = 0;
+
+			while (k < mlen) {
+				sum += matrixA.at(x).at(y) * matrixB.at(y).at(k);
+				k += 1;
+			}
+
+			matrixC.at(i).at(y) = sum;
+			y += 1;
+		}
+
+		x += 1;
+	}
+
+	return matrixC;
+}
