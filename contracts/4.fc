@@ -95,10 +95,10 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return solve_encrypt(shift, text, 1);
+  return solve_encrypt(shift, text, 0);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return solve_decrypt(shift, text, 1);
+  return solve_decrypt(shift, text, 0);
 }
