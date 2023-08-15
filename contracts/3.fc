@@ -27,7 +27,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   builder node = begin_cell();
   slice s = ll.begin_parse();
 
-  while (~ s~slice_empty?()) {
+  while (~ s.slice_empty?()) {
     int one = s~load_uint(1);
     prev <<= 1;
 
