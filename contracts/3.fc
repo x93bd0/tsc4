@@ -48,7 +48,7 @@ forall X -> int is_null (X x) asm "ISNULL";
       prev += one;
 
       x += 1;
-      node~store_uint(8);
+      node~store_uint(one + 48, 8);
 
       if (x == 126) {
         builders~tpush(node);
