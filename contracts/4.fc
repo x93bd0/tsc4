@@ -32,7 +32,7 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     if (char >= 65) & (char <= 90) {  ;; may
       char += shift;
       if (char > 90) {
-        char = 65 + (char - 90);
+        char = 64 + (char - 90);
       }
     }
 
