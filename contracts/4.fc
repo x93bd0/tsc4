@@ -11,11 +11,59 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  builder c = begin_cell();
+  shift -= (shift / 25) * 25;
+
+  slice s = text.begin_parse();
+  int flag = 1;
+
+  while (flag) {
+    int char = s~load_uint(8);
+    if (~char) {
+      flag = 0;
+    } else {
+      char += shift;
+      if (char > 122) {
+        char = 97 + (char - 122);
+      }
+
+      c.store_uint(8, char);
+    }
+  }
+
+  repeat (s.slice_refs()) {
+      c.add_ref(caesar_cipher_encrypt(shift, s~load_ref()));
+  }
+
+  return c.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  builder c = begin_cell();
+  shift -= (shift / 25) * 25;
+
+  slice s = text.begin_parse();
+  int flag = 1;
+
+  while (flag) {
+    int char = s~load_uint(8);
+    if (~char) {
+      flag = 0;
+    } else {
+      char -= shift;
+      if (char < 97) {
+        char = 97 + (97 - char);
+      }
+
+      c.store_uint(8, char);
+    }
+  }
+
+  repeat (s.slice_refs()) {
+      c.add_ref(caesar_cipher_decrypt(shift, s~load_ref()));
+  }
+
+  return c.end_cell();
 }
 

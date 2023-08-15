@@ -19,6 +19,10 @@
 () recv_internal() {
 }
 
+(cell, int) solve(int flag, int prev, int value, cell ll) {
+  
+}
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   return begin_cell().end_cell();

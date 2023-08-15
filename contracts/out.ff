@@ -1,0 +1,40 @@
+// automatically generated from `imports/stdlib.fc` `1.fc` 
+DECLPROC recv_internal
+92939 DECLMETHOD find_branch_by_hash
+recv_internal PROC:<{
+}>
+find_branch_by_hash PROC:<{
+  c2 SAVE
+  SAMEALTSAVE
+  PUSHNULL
+  SWAP
+  CONS
+  WHILE:<{
+    DUP
+    ISNULL
+    NOT
+  }>DO<{
+    UNCONS
+    DUP
+    HASHCU
+    s3 PUSH
+    EQUAL
+    IFJMP:<{
+      2 1 BLKDROP2
+      RETALT
+    }>
+    CTOS
+    DUP
+    SREFS
+    REPEAT:<{
+      LDREF
+      -ROT
+      CONS
+      SWAP
+    }>
+    DROP
+  }>
+  2DROP
+  NEWC
+  ENDC
+}>
