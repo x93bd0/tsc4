@@ -24,6 +24,8 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 
 	while (i < n) {
 		int j = 0;
+		tuple temp = empty_tuple();
+
 		while (j < m) {
 			int sum = 0;
 
@@ -33,10 +35,11 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 				k += 1;
 			}
 
-			matrixA.at(i)~push_back(sum);
+			temp~push_back(sum);
 			j += 1;
 		}
 
+		matrixC~push_back(temp);
 		i += 1;
 	}
 
