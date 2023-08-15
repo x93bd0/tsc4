@@ -13,6 +13,8 @@
 }
 
 (int) tlen (tuple t) asm "TLEN";
+forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
@@ -35,11 +37,11 @@
 				k = k + 1;
 			}
 
-			temp~tpush(sum);
+			temp~push_back(sum);
 			j = j + 1;
 		}
 
-		matrixC~tpush(temp);
+		matrixC~push_back(temp);
 		i = i + 1;
 	}
 
