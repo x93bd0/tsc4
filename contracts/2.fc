@@ -24,15 +24,15 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 	int p = tlen(matrixB);
 	int i = 0;
 
-	while (i < n) {
+	while (i <= n) {
 		int j = 0;
 		tuple temp = null();
 
-		while (j < m) {
+		while (j <= m) {
 			int sum = 0;
 
 			int k = 0;
-			while (k < p) {
+			while (k <= p) {
 				sum = sum + (matrixA.at(i).at(k) * matrixB.at(k).at(j));
 				k = k + 1;
 			}
