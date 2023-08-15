@@ -17,7 +17,7 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-	tuple matrixC = empty_tuple();
+	tuple matrixC = null();
 	int n = tlen(matrixA);
 	int m = tlen(matrixB.at(0));
 	int p = tlen(matrixB);
@@ -25,7 +25,7 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 
 	while (i < n) {
 		int j = 0;
-		tuple temp = empty_tuple();
+		tuple temp = null();
 
 		while (j < m) {
 			int sum = 0;
