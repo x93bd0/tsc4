@@ -13,32 +13,31 @@
 }
 
 (int) tlen (tuple t) asm "TLEN";
-forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
 	tuple matrixC = empty_tuple();
-	int mlen = tlen(matrixA);
-	int x = 0;
+	int n = tlen(matrixA);
+	int m = tlen(matrixB);
+	int i = 0;
 
-	while (x < mlen) {
-		int y = 0;
-		while (y < mlen) {
+	while (i < n) {
+		int j = 0;
+		while (j < m) {
 			int sum = 0;
-			int k = 0;
 
-			while (k < mlen) {
-				sum += matrixA.at(x).at(y) * matrixB.at(y).at(k);
+			int k = 0;
+			while (k < m) {
+				sum += matrixA.at(i).at(k) * matrixB.at(k).at(j);
 				k += 1;
 			}
 
-			matrixC.at(i).at(y) = sum;
-			y += 1;
+			matrixA.at(i)~push_back(sum);
+			j += 1;
 		}
 
-		x += 1;
+		i += 1;
 	}
 
 	return matrixC;
