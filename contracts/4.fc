@@ -39,10 +39,10 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     c~store_uint(char, 8);
   }
 
-  if (s.slice_refs()) {
+  {- if (s.slice_refs()) {
     cell next = s~load_ref();
     c = store_ref(c, caesar_cipher_encrypt(shift, next));
-  }
+  } -}
 
   return c.end_cell();
 }
@@ -73,10 +73,10 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     c~store_uint(char, 8);
   }
 
-  if (s.slice_refs()) {
+  {- if (s.slice_refs()) {
     cell next = s~load_ref();
     c = store_ref(c, caesar_cipher_decrypt(shift, next));
-  }
+  } -}
 
   return c.end_cell();
 }
