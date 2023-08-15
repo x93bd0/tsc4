@@ -27,6 +27,10 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   builder node = begin_cell();
   slice s = ll.begin_parse();
 
+  if (s.slice_refs() > 0) {
+    node = node.store_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
+  }
+
   while (~ s.slice_empty?()) {
     int one = s~load_uint(1);
     prev <<= 1;
@@ -52,10 +56,6 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
       prev = 0;
     }
   }
-
-  {- if (s.slice_refs() > 0) {
-    node = node.store_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
-  } -}
 
   return node.end_cell();
 }
