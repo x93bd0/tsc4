@@ -32,15 +32,15 @@
 			int k = 0;
 			while (k < p) {
 				sum += matrixA.at(i).at(k) * matrixB.at(k).at(j);
-				k += 1;
+				k = k + 1;
 			}
 
 			temp~tpush(sum);
-			j += 1;
+			j = j + 1;
 		}
 
 		matrixC~tpush(temp);
-		i += 1;
+		i = i + 1;
 	}
 
 	return matrixC;
