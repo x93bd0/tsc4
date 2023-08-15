@@ -99,58 +99,7 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  shift -= (shift / 26) * 26;
-  if (shift == 0) {
-    return text;
-  }
-
-  tuple builders = null();
-  builder node = begin_cell();
-
-  slice s = text.begin_parse();
-  node~store_uint(s~load_uint(32), 32);
-  int x = 4;
-
-  while (1) {
-    int char = s~load_uint(8);
-    if (char >= 97) & (char <= 122) { ;; min
-      char += shift;
-      if (char > 122) {
-        char = 96 + (char - 122);
-      }
-    } else {
-      if (char >= 65) & (char <= 90) {  ;; may
-        char += shift;
-        if (char > 90) {
-          char = 64 + (char - 90);
-        }
-      }
-    }
-
-    node~store_uint(char, 8); x += 1;
-    if (x >= 32) {
-      builders~push_back(node);
-      node = begin_cell();
-      x = 0;
-    }
-
-    if (s.slice_empty?()) {
-      x = 0;
-      if (s.slice_refs() > 0) {
-        builders~push_back(node);
-        s = s~load_ref().begin_parse();
-        node = begin_cell();
-      } else {
-        while (~ builders.is_null()) {
-          node = builders~pop_back().store_ref(node.end_cell());
-        }
-
-        return node.end_cell();
-      }
-    }
-  }
-
-  return node.end_cell();
+  return solve_encrypt(shift,text, 0);
 }
 
 ;; testable

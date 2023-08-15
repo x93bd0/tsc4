@@ -23,93 +23,41 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-(cell) solve(int flag, int value, cell ll) {
-  tuple builders = null();
+(cell) solve(int flag, int value, cell ll, int prev, int prevs, int flags, int vals, int flc, int plc) {
   builder node = begin_cell();
-  int x = 0; int wait = 1;
-
-  int flags = log2(flag);
-  int vals = log2(value);
-  int prev = 0;
-  int prevs = 0;
-
-  int flc = 1 << flags;
-  int vlc = 1 << vals;
   slice s = ll.begin_parse();
 
-  while (wait) {
-    int one = s~load_uint(8) - 48;
+  while (~ s~slice_empty?()) {
+    int one = s~load_uint(1);
     prev <<= 1;
-    prev += one;
 
-    if (flags == prevs) {
-      node~store_uint((prev & flc > 0) + 48, 8);
+    if (prevs != flags) {
+      node~store_uint(prev & flc > 0, 1);
       prev -= (prev & flc > 0) * flc;
-
-      x += 1;
-      if (x > 1022) {
-        x = 0;
-        builders~tpush(node);
-        node = begin_cell();
-        x = 0;
-      }
     } else {
-      prevs += 1;
+      prev += 1;
     }
 
-    if (flag == prev) {
-      int k = 0;
+    if (prev == flag) {
       prev = value;
-
+      int k = 0;
+      
       while (k < vals) {
         prev <<= 1;
-        node~store_uint((prev & vlc > 0) + 48, 8);
-        prev -= (prev & vlc > 0) * vlc;
-
-        x += 1;
-        if (x > 1022) {
-          x = 0;
-          builders~tpush(node);
-          node = begin_cell();
-          x = 0;
-        }
+        node~store_uint(prev & plc > 0, 1);
+        prev -= (prev & plc > 0) * plc;
       }
 
       prevs = 0;
-    }
-
-    if (s.slice_empty?()) {
-      if (s.slice_refs() > 0) {
-        ll = s~load_ref();
-        s = ll.begin_parse();
-      } else {
-        wait = 0;
-      }
+      prev = 0;
     }
   }
 
-  int k = 0;
-  int plc = 1 << prevs;
-  while (k < prevs) {
-    prev <<= 1;
-    node~store_uint((prev & plc > 0) + 48, 8);
-    prev -= (prev & plc > 0) * plc;
-
-    x += 1;
-    if (x > 1022) {
-      x = 0;
-      builders~tpush(node);
-      node = begin_cell();
-      x = 0;
-    }
+  if (s.slice_refs() > 0) {
+    node = node.add_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
   }
 
-  cell last_node = node.end_cell();
-  while (~ builders.is_null()) {
-    last_node = builders~tpop().store_ref(last_node).end_cell();
-  }
-
-  return last_node;
+  return node.end_cell();
 }
 
 ;; testable
@@ -117,5 +65,15 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   if (flag < 0) | (value < 0) {
     return null();
   }
-  return solve(flag, value, linked_list);
+
+  int prev = 0;
+  int prevs = 0;
+
+  int flags = log2(flag) + 1;
+  int vals = log2(value) + 1;
+
+  int flc = 1 << flags;
+  int plc = 1 << prevs;
+
+  return solve(flag, value, linked_list, prev, prevs, flags, vals, flc, plc);
 }
