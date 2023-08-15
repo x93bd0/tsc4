@@ -16,7 +16,7 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
 (cell) solve_encrypt(int shift, cell text, int flag) method_id {
-  shift -= (shift / 26) * 26;
+  shift %= 26;
   if (shift == 0) {
     return text;
   }
@@ -25,13 +25,11 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
   slice s = text.begin_parse();
 
   if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
+    c~store_uint(s~load_uint(32), 32);
   }
 
   if (s.slice_refs() > 0) {
-    cell next = s~load_ref();
-    c = c.store_ref(solve_encrypt(shift, next, 0));
+    c = c.store_ref(solve_encrypt(shift, s~load_ref(), 0));
   }
 
   while (~ s.slice_empty?()) {
@@ -57,7 +55,7 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 }
 
 (cell) solve_decrypt(int shift, cell text, int flag) method_id {
-  shift -= (shift / 26) * 26;
+  shift %= 26;
   if (shift == 0) {
     return text;
   }
@@ -66,13 +64,11 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
   slice s = text.begin_parse();
 
   if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
+    c~store_uint(s~load_uint(32), 32);
   }
 
   if (s.slice_refs() > 0) {
-    cell next = s~load_ref();
-    c = c.store_ref(solve_decrypt(shift, next, 0));
+    c = c.store_ref(solve_decrypt(shift, s~load_ref(), 0));
   }
 
   while (~ s.slice_empty?()) {
