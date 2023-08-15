@@ -15,7 +15,7 @@
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
-  while (s.slice_empty?()) {
+  while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char += shift;
@@ -45,7 +45,7 @@
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
-  while (s.slice_empty?()) {
+  while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char -= shift;
