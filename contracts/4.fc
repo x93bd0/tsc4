@@ -19,7 +19,7 @@
 
   while (flag) {
     int char = s~load_uint(8);
-    if (~char) {
+    if (char == 0) {
       flag = 0;
     } else {
       char += shift;
@@ -32,7 +32,7 @@
   }
 
   repeat (s.slice_refs()) {
-      c.add_ref(caesar_cipher_encrypt(shift, s~load_ref()));
+      c.store_ref(caesar_cipher_encrypt(shift, s~load_ref()));
   }
 
   return c.end_cell();
@@ -48,7 +48,7 @@
 
   while (flag) {
     int char = s~load_uint(8);
-    if (~char) {
+    if (char == 0) {
       flag = 0;
     } else {
       char -= shift;
@@ -61,7 +61,7 @@
   }
 
   repeat (s.slice_refs()) {
-      c.add_ref(caesar_cipher_decrypt(shift, s~load_ref()));
+      c.store_ref(caesar_cipher_decrypt(shift, s~load_ref()));
   }
 
   return c.end_cell();
