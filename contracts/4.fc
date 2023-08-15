@@ -40,7 +40,8 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   }
 
   if (s.slice_refs()) {
-    return c.store_ref(caesar_cipher_encrypt(shift, s~load_ref())).end_cell();
+    cell next = s~load_ref();
+    c = store_ref(c, caesar_cipher_encrypt(shift, next));
   }
 
   return c.end_cell();
@@ -73,8 +74,8 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   }
 
   if (s.slice_refs()) {
-    cell out = caesar_cipher_decrypt(shift, s~load_ref());
-    c = store_ref(c, out);
+    cell next = s~load_ref();
+    c = store_ref(c, caesar_cipher_decrypt(shift, next));
   }
 
   return c.end_cell();
