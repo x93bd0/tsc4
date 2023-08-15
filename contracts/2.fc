@@ -28,13 +28,13 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
 	tuple matrixC = null();
 	int n = tlen(matrixA);
-	int m = tlen(matrixA.car());
+	int m = tlen(matrixB);
 	int p = tlen(matrixB.car());
 	int i = 0;
 
 	while (i < n) {
+		tuple temp = empty_tuple();
 		int j = 0;
-		tuple temp = null();
 
 		while (j < p) {
 			int sum = 0;
