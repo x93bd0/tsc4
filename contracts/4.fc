@@ -6,6 +6,8 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
+;; x93bd0 UwU
+
 () recv_internal() {
 }
 
