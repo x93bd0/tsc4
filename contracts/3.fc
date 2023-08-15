@@ -53,9 +53,9 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
     }
   }
 
-  if (s.slice_refs() > 0) {
+  {- if (s.slice_refs() > 0) {
     node = node.store_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
-  }
+  } -}
 
   return node.end_cell();
 }
