@@ -26,7 +26,7 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-	tuple matrixC = null();
+	tuple matrixC = empty_tuple();
 	int n = tlen(matrixA);
 	int m = tlen(matrixB);
 	int p = tlen(matrixB.car());
