@@ -29,8 +29,11 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   int x = 0; int wait = 1;
 
   int flags = log2(flag);
+  int vals = log2(value);
 
   int carry_bit = 1 << flags;
+  int val_bit = 1 << vals;
+
   int prev = 0;
   int prevs = 0;
 
@@ -65,12 +68,12 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
 
     if (prev == flag) {
       int y = 0;
-      prev -= carry_bit;
+      prev = value;
 
-      while (y < flags) {
+      while (y < vals) {
         prev <<= 1;
         x += 1;
-        node~store_uint(((prev & carry_bit) > 0) + 48, 8);
+        node~store_uint(((prev & val_bit) > 0) + 48, 8);
         if (x == 126) {
           builders~tpush(node);
           node = begin_cell();
