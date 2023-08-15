@@ -18,6 +18,7 @@
 
 (int) log2(int x) asm "UBITSIZE DEC";
 forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
 
 () recv_internal() {
 }
@@ -106,9 +107,9 @@ forall X -> int is_null (X x) asm "ISNULL";
     prev -= prev & carry_bit;
   }
 
-  cell last_node = builders.pop().end_cell();
+  cell last_node = builders~tpop().end_cell();
   while (~ builders.is_null()) {
-    last_node = builders.pop().store_ref(last_node).end_cell();
+    last_node = builders~tpop().store_ref(last_node).end_cell();
   }
 
   return last_node;
