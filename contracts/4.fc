@@ -25,6 +25,7 @@
     }
 
     c.store_uint(8, char);
+    x += 1;
   }
 
   repeat (s.slice_refs()) {
