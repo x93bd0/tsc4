@@ -23,7 +23,7 @@
       flag = 0;
     } else {
       char += shift;
-      if (char > 122) {
+      if (char > 90) {
         char = 65 + (char - 90);
       }
 
