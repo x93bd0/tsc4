@@ -51,7 +51,7 @@
     } else {
       char -= shift;
       if (char < 97) {
-        char = 123 + (97 - char);
+        char = 123 - (97 - char);
       }
 
       c.store_uint(8, char);
