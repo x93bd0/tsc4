@@ -98,5 +98,8 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  if (flag < 0) | (value < 0) {
+    return null();
+  }
   return solve(flag, value, linked_list);
 }
