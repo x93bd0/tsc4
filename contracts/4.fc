@@ -29,7 +29,7 @@
       }
     }
 
-    c~store_uint(8, char);
+    c~store_uint(char, 8);
   }
 
   repeat (s.slice_refs()) {
@@ -59,7 +59,7 @@
       }
     }
 
-    c~store_uint(8, char);
+    c~store_uint(char, 8);
   }
 
   repeat (s.slice_refs()) {
