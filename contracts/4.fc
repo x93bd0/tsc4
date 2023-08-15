@@ -103,11 +103,14 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
   builder node = begin_cell();
 
   slice s = text.begin_parse();
-  int prefix = s~load_uint(32);
-  node~store_uint(prefix, 32);
+  node~store_uint(s~load_uint(32), 32);
 
-  int wait = 1;
-  while (wait) {
+  shift -= (shift / 26) * 26;
+  if (shift == 0) {
+    return text;
+  }
+
+  while (1) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char += shift;
@@ -125,22 +128,21 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
     node~store_uint(char, 8);
     if (s.slice_empty?()) {
-      builders~push_back(node);
       if (s.slice_refs() > 0) {
+        builders~push_back(node);
         s = s~load_ref().begin_parse();
         node = begin_cell();
       } else {
-        wait = 0;
+        while (~ builders.is_null()) {
+          node = builders~pop_back().store_ref(node.end_cell());
+        }
+
+        return node.end_cell();
       }
     }
   }
 
-  cell last = builders~pop_back().end_cell();
-  while (~ builders.is_null()) {
-    last = builders~pop_back().store_ref(last).end_cell();
-  }
-
-  return last;
+  return node.end_cell();
 }
 
 ;; testable
