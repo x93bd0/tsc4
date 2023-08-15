@@ -15,11 +15,6 @@
   builder c = begin_cell();
   slice s = text.begin_parse();
 
-  if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
-  }
-
   if (s.slice_refs() > 0) {
     cell next = s~load_ref();
     return c.store_ref(solve_encrypt(shift, next, 0)).end_cell();
@@ -55,11 +50,6 @@
 (cell) solve_decrypt(int shift, cell text, int flag) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
-
-  if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
-  }
 
   if (s.slice_refs() > 0) {
     cell next = s~load_ref();
