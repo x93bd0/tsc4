@@ -24,7 +24,7 @@
     } else {
       char += shift;
       if (char > 122) {
-        char = 97 + (char - 122);
+        char = 65 + (char - 90);
       }
 
       c.store_uint(8, char);
@@ -52,8 +52,8 @@
       flag = 0;
     } else {
       char -= shift;
-      if (char < 97) {
-        char = 97 + (97 - char);
+      if (char < 65) {
+        char = 90 + (65 - char);
       }
 
       c.store_uint(8, char);
