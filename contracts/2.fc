@@ -20,8 +20,8 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
 	tuple matrixC = null();
 	int n = tlen(matrixA);
-	int m = tlen(matrixB.at(0));
-	int p = tlen(matrixA.at(0));
+	int m = tlen(matrixB);
+	int p = tlen(matrixB.at(0));
 	int i = 0;
 
 	while (i <= n) {
