@@ -10,7 +10,10 @@
 
 () recv_internal() {
 }
- 
+
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
+
 (cell) solve_encrypt(int shift, cell text, int flag) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
@@ -132,7 +135,7 @@
   }
 
   cell last = builders~tpop().end_cell();
-  while (~ builders~is_null()) {
+  while (~ builders.is_null()) {
     last = builders~tpop().store_ref(last).end_cell();
   }
 
