@@ -33,7 +33,7 @@
   }
 
   repeat (s.slice_refs()) {
-      c~store_ref(caesar_cipher_encrypt(shift, s~load_ref()));
+      c = c.store_ref(caesar_cipher_encrypt(shift, s~load_ref()));
   }
 
   return c.end_cell();
@@ -63,9 +63,8 @@
   }
 
   repeat (s.slice_refs()) {
-      c~store_ref(caesar_cipher_decrypt(shift, s~load_ref()));
+      c = c.store_ref(caesar_cipher_decrypt(shift, s~load_ref()));
   }
 
   return c.end_cell();
 }
-
