@@ -29,85 +29,66 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   int x = 0; int wait = 1;
 
   int flags = log2(flag);
-
-  int carry_bit = 1 << flags;
+  int vals = log2(value);
   int prev = 0;
   int prevs = 0;
 
-  flag += carry_bit;
-
+  int flc = 1 << flags;
+  int vlc = 1 << vals;
   slice s = ll.begin_parse();
+
   while (wait) {
-    int one = s~load_uint(8) - 48;
-    prev -= carry_bit;
-    if (prevs == flags) {
-      prev <<= 1;
-      if (prev & carry_bit != carry_bit) {
-        prev += carry_bit;
-      }
+    int one = s~load_uint(1);
+    prev <<= 1;
+    prev += one;
 
-      prev += one;
-
+    if (flags == prevs) {
+      node~store_uint(prev & flc > 0, 1);
+      prev -= (prev & flc > 0) * flc;
+      
       x += 1;
-      node~store_uint(one + 48, 8);
-
-      if (x == 126) {
+      if (x > 1022) {
+        x = 0;
         builders~tpush(node);
         node = begin_cell();
         x = 0;
       }
     } else {
-      prev <<= 1;
-      prev += one;
-      prev += carry_bit;
       prevs += 1;
     }
 
-    if (prev == flag) {
-      int y = 0;
-      prev -= carry_bit;
+    if (flag == prev) {
+      int k = 0;
+      prev = value;
 
-      while (y < flags) {
+      while (k < vals) {
         prev <<= 1;
+        node~store_uint(prev & vlc > 0, 1);
+        prev -= (prev & vlc > 0) * vlc;
+
         x += 1;
-        node~store_uint(((prev & carry_bit) > 0) + 48, 8);
-        if (x == 126) {
+        if (x > 1022) {
+          x = 0;
           builders~tpush(node);
           node = begin_cell();
           x = 0;
         }
-
-        prev -= prev & carry_bit;
       }
 
-      prev = 0;
       prevs = 0;
     }
 
     if (s.slice_empty?()) {
       if (s.slice_refs() > 0) {
-        s = s~load_ref().begin_parse();
+        ll = s~load_ref();
+        s = ll.begin_parse();
       } else {
         wait = 0;
       }
     }
   }
 
-  int y = 0;
-  while (y < prevs) {
-    prev <<= 1;
-    x += 1;
-    node~store_uint(((prev & carry_bit) > 0) + 48, 8);
-    if (x == 126) {
-      builders~tpush(node);
-      node = begin_cell();
-      x = 0;
-    }
-
-    prev -= prev & carry_bit;
-  }
-
-  cell last_node = builders~tpop().end_cell();
+  cell last_node = node.end_cell();
   while (~ builders.is_null()) {
     last_node = builders~tpop().store_ref(last_node).end_cell();
   }
