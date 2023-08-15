@@ -10,19 +10,16 @@
 
 () recv_internal() {
 }
-
-builder store_ref(builder b, cell c) asm(c b) "STREF";
-
-;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+ 
+(cell) solve_encrypt(int shift, cell text, int flag) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
-  if (s.slice_refs()) {
-    cell next = s~load_ref();
-    c = store_ref(c, caesar_cipher_decrypt(shift, next));
+  if (flag) {
+    s~load_uint(32);
   }
 
+  ;; TODO: Return normal text but in a new cell
   shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
@@ -47,19 +44,23 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     c~store_uint(char, 8);
   }
 
+  if (s.slice_refs() > 0) {
+    cell next = s~load_ref();
+    return c.store_ref(solve_encrypt(shift, next, 0)).end_cell();
+  }
+
   return c.end_cell();
 }
 
-;; testable
-(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+(cell) solve_decrypt(int shift, cell text, int flag) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
-  if (s.slice_refs()) {
-    cell next = s~load_ref();
-    c = store_ref(c, caesar_cipher_decrypt(shift, next));
+  if (flag) {
+    s~load_uint(32);
   }
 
+  ;; TODO: Return normal text but in a new cell
   shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
@@ -84,5 +85,20 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     c~store_uint(char, 8);
   }
 
+  if (s.slice_refs() > 0) {
+    cell next = s~load_ref();
+    return c.store_ref(solve_decrypt(shift, next, 0)).end_cell();
+  }
+
   return c.end_cell();
+}
+
+;; testable
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+  return solve_encrypt(shift, text, 1);
+}
+
+;; testable
+(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+  return solve_decrypt(shift, text, 1);
 }
