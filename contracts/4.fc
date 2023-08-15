@@ -37,8 +37,8 @@
     c~store_uint(char, 8);
   }
 
-  repeat (s.slice_refs()) {
-      c = c.store_ref(caesar_cipher_encrypt(shift, s~load_ref()));
+  if (s.slice_refs()) {
+    return c.store_ref(caesar_cipher_encrypt(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
