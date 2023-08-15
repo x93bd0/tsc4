@@ -54,7 +54,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
       x += 1;
       node~store_uint(one + 48, 8);
 
-      if (x == 126) {
+      if (x == 1022) {
         builders~tpush(node);
         node = begin_cell();
         x = 0;
@@ -74,7 +74,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
         prev <<= 1;
         x += 1;
         node~store_uint(((prev & val_bit) > 0) + 48, 8);
-        if (x == 126) {
+        if (x == 1022) {
           builders~tpush(node);
           node = begin_cell();
           x = 0;
@@ -101,7 +101,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
     prev <<= 1;
     x += 1;
     node~store_uint(((prev & carry_bit) > 0) + 48, 8);
-    if (x == 126) {
+    if (x == 1022) {
       builders~tpush(node);
       node = begin_cell();
       x = 0;
