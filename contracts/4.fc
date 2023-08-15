@@ -16,7 +16,8 @@
   slice s = text.begin_parse();
 
   if (flag) {
-    s~load_uint(32);
+    int prefix = s~load_uint(32);
+    c~store_uint(prefix, 32);
   }
 
   ;; TODO: Return normal text but in a new cell
@@ -57,7 +58,8 @@
   slice s = text.begin_parse();
 
   if (flag) {
-    s~load_uint(32);
+    int prefix = s~load_uint(32);
+    c~store_uint(prefix, 32);
   }
 
   ;; TODO: Return normal text but in a new cell
