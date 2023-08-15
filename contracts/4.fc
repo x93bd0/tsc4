@@ -11,6 +11,8 @@
 () recv_internal() {
 }
 
+builder store_ref(builder b, cell c) asm(c b) "STREF";
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   builder c = begin_cell();
@@ -71,7 +73,8 @@
   }
 
   if (s.slice_refs()) {
-    return c.store_ref(caesar_cipher_decrypt(shift, s~load_ref())).end_cell();
+    cell out = caesar_cipher_decrypt(shift, s~load_ref());
+    c = store_ref(c, out);
   }
 
   return c.end_cell();
