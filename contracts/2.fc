@@ -31,7 +31,7 @@
 
 			int k = 0;
 			while (k < p) {
-				sum += matrixA.at(i).at(k) * matrixB.at(k).at(j);
+				sum = sum + (matrixA.at(i).at(k) * matrixB.at(k).at(j));
 				k = k + 1;
 			}
 

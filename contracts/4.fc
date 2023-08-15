@@ -20,26 +20,17 @@
     c~store_uint(prefix, 32);
   }
 
-  ;; TODO: Return normal text but in a new cell
-  shift -= (shift / 26) * 26;
+  shift -= (shift / 255) * 255;
   if (shift == 0) {
     return text;
   }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
-    if (char >= 97) & (char <= 122) { ;; min
-      char += shift;
-      if (char > 122) {
-        char = 96 + (char - 122);
-      }
-    }
+    char += shift;
 
-    if (char >= 65) & (char <= 90) {  ;; may
-      char += shift;
-      if (char > 90) {
-        char = 64 + (char - 90);
-      }
+    if (char > 255) {
+      char = char - 256;
     }
 
     c~store_uint(char, 8);
@@ -62,26 +53,17 @@
     c~store_uint(prefix, 32);
   }
 
-  ;; TODO: Return normal text but in a new cell
-  shift -= (shift / 26) * 26;
+  shift -= (shift / 255) * 255;
   if (shift == 0) {
     return text;
   }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
-    if (char >= 97) & (char <= 122) { ;; min
-      char -= shift;
-      if (char < 97) {
-        char = 123 - (97 - char);
-      }
-    }
+    char -= shift;
 
-    if (char >= 65) & (char <= 90) {  ;; may
-      char -= shift;
-      if (char < 65) {
-        char = 91 - (65 - char);
-      }
+    if (char < 0) {
+      char = 256 + char;
     }
 
     c~store_uint(char, 8);
