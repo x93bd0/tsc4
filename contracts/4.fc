@@ -11,16 +11,13 @@
 () recv_internal() {
 }
 
-builder store_ref(builder b, cell c) asm(c b) "STREF";
-
-;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(cell) cce(int shift, cell text, int flag) {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
   if (s.slice_refs()) {
     cell next = s~load_ref();
-    c = store_ref(c, caesar_cipher_decrypt(shift, next));
+    c = store_ref(c, cce(shift, next, 1));
   }
 
   shift -= (shift / 26) * 26;
@@ -28,7 +25,13 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     return text;
   }
 
-  while (~ s.slice_empty?()) {
+  int m = 123;
+  if (flag) {
+    m = 127;
+  }
+
+  int x = 0;
+  while (~ s.slice_empty?()) & (x < m) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char += shift;
@@ -45,19 +48,25 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     }
 
     c~store_uint(char, 8);
+    x += 1;
   }
 
   return c.end_cell();
 }
 
 ;; testable
-(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+  return cce(shift, text, 0);
+}
+
+
+(cell) ccd(int shift, cell text, int flag) {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
   if (s.slice_refs()) {
     cell next = s~load_ref();
-    c = store_ref(c, caesar_cipher_decrypt(shift, next));
+    c = store_ref(c, ccd(shift, next, 1));
   }
 
   shift -= (shift / 26) * 26;
@@ -65,7 +74,13 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     return text;
   }
 
-  while (~ s.slice_empty?()) {
+  int m = 123;
+  if (flag) {
+    m = 127;
+  }
+
+  int x = 0;
+  while (~ s.slice_empty?()) & (x < m) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char -= shift;
@@ -82,7 +97,13 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
     }
 
     c~store_uint(char, 8);
+    x += 1;
   }
 
   return c.end_cell();
+}
+
+;; testable
+(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+  return ccd(shift, text, 0);
 }
