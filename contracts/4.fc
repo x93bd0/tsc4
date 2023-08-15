@@ -12,7 +12,6 @@
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   builder c = begin_cell();
-  shift -= (shift / 25) * 25;
 
   slice s = text.begin_parse();
   int flag = 1;
@@ -41,7 +40,6 @@
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   builder c = begin_cell();
-  shift -= (shift / 25) * 25;
 
   slice s = text.begin_parse();
   int flag = 1;
