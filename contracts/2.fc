@@ -9,6 +9,14 @@
   After calculating the result matrix, the function should return final result (as tuple).
 -}
 
+{-
+	the first matrix is n*m, the second is m*p
+
+	if the matrices are 2*5 + 5*5, the final matrix is n*p = 2*5
+	if the matrices are 2*5 + 5*6, the final matrix is n*p = 2*6
+	so you don't need to fill with 0s, just create the 3rd matrix with the correct dimensions
+-}
+
 () recv_internal() {
 }
 
@@ -21,18 +29,18 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 	tuple matrixC = null();
 	int n = tlen(matrixA);
 	int m = tlen(matrixA.car());
-	int p = tlen(matrixB);
+	int p = tlen(matrixB.car());
 	int i = 0;
 
 	while (i < n) {
 		int j = 0;
 		tuple temp = null();
 
-		while (j < m) {
+		while (j < p) {
 			int sum = 0;
 
 			int k = 0;
-			while (k < p) {
+			while (k < m) {
 				sum = sum + (matrixA.at(i).at(k) * matrixB.at(k).at(j));
 				k = k + 1;
 			}
