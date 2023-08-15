@@ -15,19 +15,16 @@
 
   slice s = text.begin_parse();
   int flag = 1;
+  int x = 0;
 
-  while (flag) {
+  while (x < 123) {
     int char = s~load_uint(8);
-    if (char == 0) {
-      flag = 0;
-    } else {
-      char += shift;
-      if (char > 122) {
-        char = 96 + (char - 122);
-      }
-
-      c.store_uint(8, char);
+    char += shift;
+    if (char > 122) {
+      char = 96 + (char - 122);
     }
+
+    c.store_uint(8, char);
   }
 
   repeat (s.slice_refs()) {
@@ -44,18 +41,16 @@
   slice s = text.begin_parse();
   int flag = 1;
 
-  while (flag) {
+  int x = 0;
+  while (x < 123) {
     int char = s~load_uint(8);
-    if (char == 0) {
-      flag = 0;
-    } else {
-      char -= shift;
-      if (char < 97) {
-        char = 123 - (97 - char);
-      }
-
-      c.store_uint(8, char);
+    char -= shift;
+    if (char < 97) {
+      char = 123 - (97 - char);
     }
+
+    c.store_uint(8, char);
+    x += 1;
   }
 
   repeat (s.slice_refs()) {
