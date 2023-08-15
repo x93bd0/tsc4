@@ -41,7 +41,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
 
   slice s = ll.begin_parse();
   while (wait) {
-    int one = s~load_uint(1);
+    int one = s~load_uint(8) - 48;
     prev -= carry_bit;
     if (prevs == flags) {
       prev <<= 1;
@@ -52,7 +52,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
       prev += one;
 
       x += 1;
-      node~store_uint(one, 1);
+      node~store_uint(one + 48, 8);
 
       if (x == 1022) {
         builders~tpush(node);
@@ -73,7 +73,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
       while (y < vals) {
         prev <<= 1;
         x += 1;
-        node~store_uint((prev & val_bit) > 0, 1);
+        node~store_uint(((prev & val_bit) > 0) + 48, 8);
         if (x == 1022) {
           builders~tpush(node);
           node = begin_cell();
@@ -100,7 +100,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   while (y < prevs) {
     prev <<= 1;
     x += 1;
-    node~store_uint((prev & carry_bit) > 0, 1);
+    node~store_uint(((prev & carry_bit) > 0) + 48, 8);
     if (x == 1022) {
       builders~tpush(node);
       node = begin_cell();
