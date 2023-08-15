@@ -48,6 +48,9 @@
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
+
+  shift -= (shift / 25) * 25;
+
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
@@ -67,8 +70,8 @@
     c~store_uint(char, 8);
   }
 
-  repeat (s.slice_refs()) {
-      c = c.store_ref(caesar_cipher_decrypt(shift, s~load_ref()));
+  if (s.slice_refs()) {
+    return c.store_ref(caesar_cipher_decrypt(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
