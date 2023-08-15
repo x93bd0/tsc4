@@ -19,7 +19,8 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
 	tuple matrixC = empty_tuple();
 	int n = tlen(matrixA);
-	int m = tlen(matrixB);
+	int m = tlen(matrixB.at(0));
+	int p = tlen(matrixB);
 	int i = 0;
 
 	while (i < n) {
@@ -30,7 +31,7 @@ forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 			int sum = 0;
 
 			int k = 0;
-			while (k < m) {
+			while (k < p) {
 				sum += matrixA.at(i).at(k) * matrixB.at(k).at(j);
 				k += 1;
 			}
