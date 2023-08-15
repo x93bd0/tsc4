@@ -18,26 +18,34 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   builder c = begin_cell();
   slice s = text.begin_parse();
 
-  shift -= (shift / 255) * 255;
+  shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
   }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
-    char += shift;
+    if (char >= 97) & (char <= 122) { ;; min
+      char += shift;
+      if (char > 122) {
+        char = 96 + (char - 122);
+      }
+    }
 
-    if (char > 255) {
-      char = char - 256;
+    if (char >= 65) & (char <= 90) {  ;; may
+      char += shift;
+      if (char > 90) {
+        char = 64 + (char - 90);
+      }
     }
 
     c~store_uint(char, 8);
   }
 
-  if (s.slice_refs()) {
+  {-if (s.slice_refs()) {
     cell next = s~load_ref();
     c = store_ref(c, caesar_cipher_encrypt(shift, next));
-  }
+  }-}
 
   return c.end_cell();
 }
@@ -47,26 +55,34 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   builder c = begin_cell();
   slice s = text.begin_parse();
 
-  shift -= (shift / 255) * 255;
+  shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
   }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
-    char -= shift;
+    if (char >= 97) & (char <= 122) { ;; min
+      char -= shift;
+      if (char < 97) {
+        char = 123 - (97 - char);
+      }
+    }
 
-    if (char < 0) {
-      char = 256 + char;
+    if (char >= 65) & (char <= 90) {  ;; may
+      char -= shift;
+      if (char < 65) {
+        char = 91 - (65 - char);
+      }
     }
 
     c~store_uint(char, 8);
   }
 
-  if (s.slice_refs()) {
+  {-if (s.slice_refs()) {
     cell next = s~load_ref();
     c = store_ref(c, caesar_cipher_decrypt(shift, next));
-  }
+  }-}
 
   return c.end_cell();
 }
