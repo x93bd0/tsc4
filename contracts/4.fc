@@ -6,7 +6,7 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
-;; x93bd0 AwA
+;; x93bd0 EwE
 
 () recv_internal() {
 }
@@ -19,6 +19,9 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   slice s = text.begin_parse();
 
   shift -= (shift / 26) * 26;
+  if (shift == 0) {
+    return text;
+  }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
@@ -53,6 +56,9 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
   slice s = text.begin_parse();
 
   shift -= (shift / 26) * 26;
+  if (shift == 0) {
+    return text;
+  }
 
   while (~ s.slice_empty?()) {
     int char = s~load_uint(8);
