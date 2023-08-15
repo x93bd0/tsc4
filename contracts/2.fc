@@ -21,7 +21,7 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 	tuple matrixC = null();
 	int n = tlen(matrixA);
 	int m = tlen(matrixB.at(0));
-	int p = tlen(matrixB);
+	int p = tlen(matrixA.at(0));
 	int i = 0;
 
 	while (i <= n) {
