@@ -37,6 +37,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
       prev += one;
     } else {
       prev += one;
+      prevs += 1;
     }
 
     if (prev == flag) {
