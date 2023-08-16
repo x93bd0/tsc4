@@ -64,7 +64,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
             return base.store_ref(use.end_cell()).end_cell();
           }
 
-          return base.end_cell();
+          return base.store_ref(begin_cell().end_cell()).end_cell();
         }
 
         s = s~load_ref().begin_parse();
