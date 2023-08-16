@@ -17,8 +17,8 @@
 -}
 
 (int) log2(int x) asm "UBITSIZE DEC";
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
+int slice_data_empty(slice s) asm "SDEMPTY";
+int slice_refs_empty(slice s) asm "SREMPTY";
 
 () recv_internal() {
 }
@@ -27,7 +27,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
   builder node = begin_cell();
   slice s = ll.begin_parse();
 
-  while (~ s.slice_empty?()) {
+  while (~ s.slice_data_empty?()) {
     int one = s~load_uint(1);
     prev <<= 1;
 
@@ -55,7 +55,7 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
     }
   }
 
-  if (s.slice_refs() > 0) {
+  if (~ s.slice_refs_empty()) {
     node = node.store_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
   } else {
     int l = 0;
