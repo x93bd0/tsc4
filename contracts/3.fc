@@ -142,8 +142,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     return null();
   }
 
-  int flags = log2(flag) + 1;
-  int vals = log2(value) + 1;
+  int flags = log2(flag);
+  int vals = log2(value);
 
   int flc = 1 << (flags - 1);
   int vlc = 1 << (vals - 1);
