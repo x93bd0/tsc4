@@ -55,7 +55,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
             x += 1;
             k += 1;
 
-            if (x >= 254) & (k < prevs) {
+            if (x >= 1022) & (k < prevs) {
               use = begin_cell();
               ret = 1;
               x = 0;
@@ -87,7 +87,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
           k += 1;
 
           ;; check overflow
-          if (x >= 254) & (k < vals) {
+          if (x >= 1022) & (k < vals) {
             use = begin_cell();
             ret = 1;
             x = 0;
@@ -116,7 +116,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs -= 1;
         x += 1;
 
-        if (x >= 254) {
+        if (x >= 1022) {
           return base.store_ref(
             solve(
               s, 0, begin_cell(),
