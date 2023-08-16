@@ -50,7 +50,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
           while (k < prevs) {
             prev <<= 1;
-            base~store_uint(prev & plc > 0, 1);
+            use~store_uint(prev & plc > 0, 1);
             prev -= prev & plc;
             x += 1;
             k += 1;
