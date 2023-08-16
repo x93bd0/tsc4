@@ -43,7 +43,9 @@ int slice_refs_empty(slice s) asm "SREMPTY";
           int plc = 1 << prevs;
           int k = 0;
 
-          build use = base;
+          builder use = base;
+          int ret = 0;
+
           while (k < prevs) {
             prev <<= 1;
             base~store_uint(prev & plc > 0, 1);
