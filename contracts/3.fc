@@ -16,7 +16,7 @@
 
 -}
 
-;; owo
+;; AwA
 
 (int) log2(int x) asm "UBITSIZE DEC";
 int slice_data_empty(slice s) asm "SDEMPTY";
