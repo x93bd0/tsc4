@@ -41,10 +41,25 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       if (prevs != flags) {
         if (slice_refs_empty(s)) {
           int plc = 1 << prevs;
-          repeat (prevs) {
+          int k = 0;
+
+          build use = base;
+          while (k < prevs) {
             prev <<= 1;
             base~store_uint(prev & plc > 0, 1);
             prev -= prev & plc;
+            x += 1;
+            k += 1;
+
+            if (x >= 255) & (k < prevs) {
+              use = begin_cell();
+              ret = 1;
+              x = 0;
+            }
+          }
+
+          if (ret) {
+            return base.store_ref(use.end_cell()).end_cell();
           }
 
           return base.end_cell();
@@ -56,12 +71,36 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       if (prev == flag) {
         prev = value;
 
-        repeat (vals) {
+        builder use = base;
+        int ret = 0;
+        int k = 0;
+
+        while (k < vals) {
           prev <<= 1;
-          base~store_uint(prev & vlc > 0, 1);
+          use~store_uint(prev & vlc > 0, 1);
           prev -= prev & vlc;
+          x += 1;
+          k += 1;
 
           ;; check overflow
+          if (x >= 255) & (k < vals) {
+            use = begin_cell();
+            ret = 1;
+            x = 0;
+          }
+        }
+
+        if (ret) {
+          if (s.slice_empty?()) {
+            return base.store_ref(use.end_cell()).end_cell();
+          }
+
+          return base.store_ref(solve(
+            s, x, use,
+            0, 0,
+            flag, flags, flc,
+            value, vals, vlc
+          )).end_cell();
         }
 
         prev = 0;
@@ -70,8 +109,19 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prev <<= 1;
         base~store_uint(prev & flc > 0, 1);
         prev -= prev & flc;
+        prevs -= 1;
+        x += 1;
 
-        ;; check overflow
+        if (x >= 255) {
+          return base.store_ref(
+            solve(
+              s, 0, begin_cell(),
+              prev, prevs,
+              flag, flags, flc,
+              value, vals, vlc
+            )
+          ).end_cell();
+        }
       }
     }
   }
