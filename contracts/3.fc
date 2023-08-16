@@ -39,7 +39,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       prev <<= diff;
       prevs += diff;
 
-      prev += s~load_uint(diff);
+      prev += s~load_uint(prevs);
       if (prevs != flags) {
         if (s.slice_refs_empty()) {
           int plc = 1 << (prevs - 1);
@@ -118,7 +118,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         x += 1;
 
         ;; handle overflow
-        if (x >= 255) {
+        if (x >= 254) {
           if (s.slice_empty?()) {
             return base.end_cell();
           }
