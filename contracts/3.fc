@@ -104,10 +104,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         return base.end_cell();
       }
       
-      return solve(
-        s~load_ref().begin_parse(), x, base, prev, prevs,
-        flag, flags, flc, value, vals, vlc
-      );
+      s = s~load_ref().begin_parse();
     }
   }
 
