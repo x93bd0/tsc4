@@ -23,64 +23,110 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 () recv_internal() {
 }
 
-(cell) solve(int flag, int value, cell ll, int prev, int prevs, int flags, int vals, int flc, int plc) {
-  builder node = begin_cell();
-  slice s = ll.begin_parse();
+(cell) solve(
+  slice s,
+  int x, builder base,
 
-  while (~ s.slice_data_empty?()) {
+  int prev, int prevs,
+  int flag, int flags, int flc,
+  int value, int vals, int vlc
+) {
+  while (1) {
+    ;; TODO load all faster
     int one = s~load_uint(1);
     prev <<= 1;
+    prev += one;
 
-    if (prevs != flags) {
-      node~store_uint(prev & flc > 0, 1);
-      prev -= (prev & flc > 0) * flc;
-      prev += one;
+    if (prevs == flags) {
+      base~store_uint(prev & flc > 0, 1);
+      x += 1;
+
+      builder use = base;
+      int ret = 0;
+
+      prev -= prev & flc;
+      if (x >= 255) {
+        x = 0;
+        ret = 1;
+        use = begin_cell();
+      }
+
+      if (prev == flag) {
+        prev = value;
+        repeat (vals) {
+          prev <<= 1;
+          use~store_uint(prev & vlc > 0, 1);
+          x += 1;
+
+          if (x >= 255) {
+            x = 0;
+            ret = 1;
+            use = begin_cell();
+          }
+        }
+
+        prev = 0;
+        prevs = 0;
+      }
+
+      if (ret) {
+        return base.store_ref(solve(
+          s, x, use, prev, prevs,
+          flag, flags, flc, value, vals, vlc
+        )).end_cell();
+      }
     } else {
-      prev += one;
       prevs += 1;
     }
 
-    if (prev == flag) {
-      prev = value;
-      int k = 0;
-      
-      while (k < vals) {
-        prev <<= 1;
-        node~store_uint(prev & plc > 0, 1);
-        prev -= (prev & plc > 0) * plc;
+    if (s.slice_data_empty()) {
+      if (s.slice_refs_empty()) {
+        builder use = base;
+        int plc = 1 << prevs;
+        int ret = 0;
+        repeat (prevs) {
+          prev <<= 1;
+          use~store_uint(prev & plc > 0, 1);
+          prev -= prev & plc;
+          x += 1;
+          
+          if (x >= 255) {
+            x = 0;
+            ret = 1;
+            use = begin_cell();
+          }
+        }
+
+        if (ret) {
+          return base.store_ref(use.end_cell()).end_cell();
+        }
+
+        return base.end_cell();
       }
-
-      prevs = 0;
-      prev = 0;
+      
+      return solve(
+        s~load_ref().begin_parse(), x, base, prev, prevs,
+        flag, flags, flc, value, vals, vlc
+      );
     }
   }
 
-  if (~ s.slice_refs_empty()) {
-    node = node.store_ref(solve(flag, value, s~load_ref(), prev, prevs, flags, vals, flc, plc));
-  } else {
-    int l = 0;
-    plc = 1 << prevs;
-
-    while (l < prevs) {
-      prev <<= 1;
-      node~store_uint(prev & plc > 0, 1);
-      prev -= (prev & plc > 0) * plc;
-    }
-  }
-
-  return node.end_cell();
+  return base.end_cell();
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  int prev = 0;
-  int prevs = 0;
-
   int flags = log2(flag) + 1;
   int vals = log2(value) + 1;
 
   int flc = 1 << flags;
-  int plc = 1 << prevs;
+  int vlc = 1 << vals;
 
-  return solve(flag, value, linked_list, prev, prevs, flags, vals, flc, plc);
+  return solve(
+    linked_list.begin_parse(), 0, begin_cell(),
+
+    0, 0,
+    flag, flags, flc,
+    value, vals, vlc
+  );
 }
