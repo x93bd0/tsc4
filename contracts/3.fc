@@ -34,8 +34,9 @@ forall X -> (tuple, (X)) tpop(tuple t) asm "UNCONS";
     if (prevs != flags) {
       node~store_uint(prev & flc > 0, 1);
       prev -= (prev & flc > 0) * flc;
+      prev += one;
     } else {
-      prev += 1;
+      prev += one;
     }
 
     if (prev == flag) {
