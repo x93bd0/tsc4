@@ -105,6 +105,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       ;; load next
       base~store_uint(prev & flc > 0, 1);
       prev -= prev & flc;
+      prevs -= 1;
       x += 1;
 
       ;; handle overflow
