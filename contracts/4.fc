@@ -15,6 +15,9 @@ forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 
+int slice_data_empty?(slice s) asm "SDEMPTY";
+int slice_refs_empty?(slice s) asm "SREMPTY";
+
 (cell) solve_encrypt(int shift, cell text, int flag) method_id {
   shift -= (shift / 26) * 26;
   if (shift == 0) {
