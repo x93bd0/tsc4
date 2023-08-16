@@ -22,67 +22,24 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple) nop(X x) asm "NOP";
 
 ;; testable
-(tuple) mmlt(tuple matrixA, tuple matrixB) method_id {
-	tuple matrixC = empty_tuple();
-	int n = matrixA.tlen();
-	int m = matrixB.tlen();
-	int p = matrixB.at(0).tlen();
-	int i = 0;
+(tuple) fibonacci_sequence (int n, int k) method_id {
+  tuple out = null();
+  int a = 0;
+  int b = 1;
 
-	while (i < n) {
-		tuple temp = empty_tuple();
-		int j = 0;
-
-		while (j < p) {
-			int sum = 0;
-
-			int k = 0;
-			while (k < m) {
-				sum = sum + (matrixA.at(i).at(k) * matrixB.at(k).at(j));
-				k = k + 1;
-			}
-
-			temp~tpush(sum);
-			j = j + 1;
-		}
-
-		matrixC~tpush(temp);
-		i = i + 1;
-	}
-
-	return matrixC;
-}
-
-(tuple) mexp(tuple base, int n) {
-  tuple res = nop([[1, 0], [0, 1]]);
-  while (n > 0) {
-      if (n % 2 == 1) {
-        res = mmlt(res, base);
-      }
-
-      base = mmlt(base, base);
-      n /= 2;
+  repeat (n) {
+    int c = a + b;
+    a = b;
+    b = c;
   }
 
-  return res;
-}
-
-;; testable
-(tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple base = nop([[1, 1], [1, 0]]);
-  tuple result = mexp(base, n - 1);
-  tuple out = null();
-
-  int a = result.at(1).at(0);
-  int b = result.at(0).at(0);
-  out~tpush(out);
-
+  out~tpush(a);
   repeat (k - 1) {
     int c = a + b;
     a = b;
     b = c;
 
-    out~tpush(b);
+    out~tpush(a);
   }
 
   return out;
