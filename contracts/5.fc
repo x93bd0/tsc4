@@ -52,4 +52,3 @@ forall X -> (tuple) nop(X x) asm "NOP";
 
   return out;
 }
-

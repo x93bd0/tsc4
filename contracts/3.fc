@@ -26,130 +26,93 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 }
 
 (cell) solve(
-  slice s,
-  int x, builder base,
+  slice s, int x, builder b,
 
   int prev, int prevs,
   int flag, int flags, int flc,
-  int value, int vals, int vlc
+  int value, int vals
 ) {
   while (1) {
-    if (prevs != flags) {
+    if (prevs < flags) {
       int diff = min(flags - prevs, slice_bits(s));
-      prev <<= diff;
       prevs += diff;
-
+      prev <<= diff;
       prev += s~load_uint(diff);
+
       if (prevs != flags) {
         if (slice_refs_empty(s)) {
-          int plc = 1 << prevs;
-          int k = 0;
+          if (prevs > 1022 - x) {
+            builder next = begin_cell();
+            int magic = (prevs - (1022 - x));
+            
+            int v1 = prev >> magic;
+            int v2 = prev - (v1 << magic);
 
-          builder use = base;
-          int ret = 0;
+            b~store_uint(v1, 1022 - x);
+            next~store_uint(v2, magic);
 
-          while (k < prevs) {
-            prev <<= 1;
-            use~store_uint(prev & plc > 0, 1);
-            prev -= prev & plc;
-            x += 1;
-            k += 1;
-
-            if (x >= 1022) & (k < prevs) {
-              use = begin_cell();
-              ret = 1;
-              x = 0;
-            }
+            return b.store_ref(next.end_cell()).end_cell();
           }
 
-          if (ret) {
-            return base.store_ref(use.end_cell()).end_cell();
-          }
-
-          return base.end_cell();
+          b~store_uint(prev, prevs);
+          return b.end_cell();
         }
 
         s = s~load_ref().begin_parse();
       }
     } else {
       if (prev == flag) {
-        prev = value;
-
-        builder use = base;
-        int ret = 0;
-        int k = 0;
-
-        while (k < vals) {
-          prev <<= 1;
-          use~store_uint(prev & vlc > 0, 1);
-          prev -= prev & vlc;
-          x += 1;
-          k += 1;
-
-          ;; check overflow
-          if (x >= 1022) & (k < vals) {
-            use = begin_cell();
-            ret = 1;
-            x = 0;
-          }
-        }
-
-        if (ret) {
-          if (s.slice_empty?()) {
-            return base.store_ref(use.end_cell()).end_cell();
-          }
-
-          return base.store_ref(solve(
-            s, x, use,
-            0, 0,
-            flag, flags, flc,
-            value, vals, vlc
-          )).end_cell();
-        }
-
-        prev = 0;
         prevs = 0;
+        prev = 0;
+
+        if (vals > 1022 - x) {
+          builder next = begin_cell();
+          int magic = (vals - (1022 - x));
+
+          int v1 = value >> magic;
+          int v2 = value - (v1 << magic);
+
+          b~store_uint(v1, 1022 - x);
+          next~store_uint(v2, magic);
+
+          return b.store_ref(solve(
+            s, magic, next,
+            prev, prevs,
+            flag, flags, flc,
+            value, vals
+          )).end_cell();
+        } else {
+          b~store_uint(value, vals);
+          x += vals;
+        }
       } else {
-        prev <<= 1;
-        base~store_uint(prev & flc > 0, 1);
+        ;; remove left bit
+        b~store_uint(prev & flc > 0, 1);
         prev -= prev & flc;
         prevs -= 1;
-        x += 1;
-
+        
         if (x >= 1022) {
-          return base.store_ref(
-            solve(
-              s, 0, begin_cell(),
-              prev, prevs,
-              flag, flags, flc,
-              value, vals, vlc
-            )
-          ).end_cell();
+          return b.store_ref(solve(
+            s, 0, begin_cell(),
+            prev, prevs,
+            flag, flags, flc,
+            value, vals
+          )).end_cell();
         }
       }
     }
   }
 
-  return base.end_cell();
+  return b.end_cell();
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  if (flag < 0) | (value < 0) {
-    return null();
-  }
-
-  int flags = log2(flag);
-  int vals = log2(value);
-
-  int flc = 1 << flags;
-  int vlc = 1 << vals;
-
-  return solve(
-    linked_list.begin_parse(), 0, begin_cell(),
-
+  int l2f = log2(flag);
+  int v2f = log2(flag);
+  ;; TODO: See log2(flag)
+  return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
-    flag, flags, flc,
-    value, vals, vlc
-  );
+    flag, l2f, 1 << l2f,
+    value, v2f);
 }
