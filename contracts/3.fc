@@ -32,88 +32,46 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   int value, int vals, int vlc
 ) {
   while (1) {
-    ;; TODO load all faster
-    int one = s~load_uint(1);
-    prev <<= 1;
-    prev += one;
-    prevs += 1;
+    if (prevs != flags) {
+      int diff = min(flags - prevs, slice_bits(s));
+      prev <<= diff;
+      prevs += diff;
 
-    if (prevs >= flags) {
-      if (prevs > flags) {
-        prevs -= 1;
-        base~store_uint(prev & flc > 0, 1);
-        x += 1;
-      }
-
-      builder use = base;
-      int ret = 0;
-
-      prev -= prev & flc;
-      if (x >= 255) {
-        x = 0;
-        ret = 1;
-        use = begin_cell();
-      }
-
-      if (prev == flag) {
-        prev = value;
-        int k = 0;
-
-        while (k < vals) {
-          prev <<= 1;
-          use~store_uint(prev & vlc > 0, 1);
-          x += 1;
-
-          if (x >= 255) {
-            x = 0;
-            ret = 1;
-            use = begin_cell();
+      prev += s~load_uint(prevs);
+      if (prevs != flags) {
+        if (slice_refs_empty(s)) {
+          int plc = 1 << prevs;
+          repeat (prevs) {
+            prev <<= 1;
+            base~store_uint(prev & plc > 0, 1);
+            prev -= prev & plc;
           }
 
-          k += 1;
+          return base.end_cell();
+        }
+
+        s = s~load_ref().begin_parse();
+      }
+    } else {
+      if (prev == flag) {
+        prev = value;
+
+        repeat (vals) {
+          prev <<= 1;
+          base~store_uint(prev & vlc > 0, 1);
+          prev -= prev & vlc;
+
+          ;; check overflow
         }
 
         prev = 0;
         prevs = 0;
-      }
-
-      if (ret) {
-        return base.store_ref(solve(
-          s, x, use, prev, prevs,
-          flag, flags, flc, value, vals, vlc
-        )).end_cell();
-      }
-    }
-
-    if (s.slice_data_empty()) {
-      if (s.slice_refs_empty()) {
-        builder use = base;
-        int plc = 1 << prevs;
-        int ret = 0;
-        int k = 0;
-
-        while (k < prevs) {
-          if (x >= 255) {
-            x = 0;
-            ret = 1;
-            use = begin_cell();
-          }
-
-          prev <<= 1;
-          use~store_uint(prev & plc > 0, 1);
-          prev -= prev & plc;
-          x += 1;
-          
-          k += 1;
-        }
-
-        if (ret) {
-          return base.store_ref(use.end_cell()).end_cell();
-        }
-
-        return base.end_cell();
       } else {
-        s = s~load_ref().begin_parse();
+        prev <<= 1;
+        base~store_uint(prev & flc > 0, 1);
+        prev -= prev & flc;
+
+        ;; check overflow
       }
     }
   }
