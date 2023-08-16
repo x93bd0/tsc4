@@ -52,7 +52,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   }
 
   if (~ s.slice_refs_empty()) {
-    return c.store_ref(solve_encrypt(shift, s~load_ref(), 0));
+    return c.store_ref(solve_encrypt(shift, s~load_ref(), 0)).end_cell();
   }
 
   return c.end_cell();
@@ -93,7 +93,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
   if (~ s.slice_refs_empty()) {
     cell next = s~load_ref();
-    c = c.store_ref(solve_decrypt(shift, next, 0));
+    c = c.store_ref(solve_decrypt(shift, next, 0)).end_cell();
   }
 
   return c.end_cell();
