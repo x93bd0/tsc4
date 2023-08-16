@@ -95,6 +95,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         }
 
         if (ret) {
+          if (s.slice_empty?()) {
+            return base.store_ref(use.end_cell()).end_cell();
+          }
+
           return base.store_ref(solve(
             s, x, use,
             0, 0,
