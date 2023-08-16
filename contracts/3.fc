@@ -53,7 +53,9 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
       if (prev == flag) {
         prev = value;
-        repeat (vals) {
+        int k = 0;
+
+        while (k < vals) {
           prev <<= 1;
           use~store_uint(prev & vlc > 0, 1);
           x += 1;
@@ -63,6 +65,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
             ret = 1;
             use = begin_cell();
           }
+
+          k += 1;
         }
 
         prev = 0;
@@ -84,17 +88,21 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         builder use = base;
         int plc = 1 << prevs;
         int ret = 0;
-        repeat (prevs) {
-          prev <<= 1;
-          use~store_uint(prev & plc > 0, 1);
-          prev -= prev & plc;
-          x += 1;
-          
+        int k = 0;
+
+        while (k < prevs) {
           if (x >= 255) {
             x = 0;
             ret = 1;
             use = begin_cell();
           }
+
+          prev <<= 1;
+          use~store_uint(prev & plc > 0, 1);
+          prev -= prev & plc;
+          x += 1;
+          
+          k += 1;
         }
 
         if (ret) {
@@ -102,9 +110,9 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         }
 
         return base.end_cell();
+      } else {
+        s = s~load_ref().begin_parse();
       }
-      
-      s = s~load_ref().begin_parse();
     }
   }
 
