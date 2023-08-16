@@ -113,6 +113,6 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
-    flag, l2f, 1 << l2f,
+    flag, l2f, 1 << (l2f - 1),
     value, v2f);
 }
