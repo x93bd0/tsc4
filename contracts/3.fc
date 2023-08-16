@@ -16,14 +16,14 @@
 
 -}
 
-;; AwA
+;; Fifth prototype
+
+() recv_internal() {
+}
 
 (int) log2(int x) asm "UBITSIZE DEC";
 int slice_data_empty(slice s) asm "SDEMPTY";
 int slice_refs_empty(slice s) asm "SREMPTY";
-
-() recv_internal() {
-}
 
 (cell) solve(
   slice s,
@@ -33,61 +33,26 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   int flag, int flags, int flc,
   int value, int vals, int vlc
 ) {
-  while (1) {
+  if (prevs != flags) {
+    int diff = min(flags - prevs, slice_bits(s));
+    prev <<= diff;
+    prev += s~load_uint(diff);
+    prevs += diff;
+
     if (prevs != flags) {
-      int diff = min(flags - prevs, slice_bits(s));
-      prev <<= diff;
-      prevs += diff;
-
-      prev += s~load_uint(prevs);
-      if (prevs != flags) {
-        if (slice_refs_empty(s)) {
-          int plc = 1 << prevs;
-          int k = 0;
-
-          builder use = base;
-          int ret = 0;
-
-          while (k < prevs) {
-            prev <<= 1;
-            use~store_uint(prev & plc > 0, 1);
-            prev -= prev & plc;
-            x += 1;
-            k += 1;
-
-            if (x >= 254) & (k < prevs) {
-              use = begin_cell();
-              ret = 1;
-              x = 0;
-            }
-          }
-
-          if (ret) {
-            return base.store_ref(use.end_cell()).end_cell();
-          }
-
-          return base.end_cell();
-        }
-
-        s = s~load_ref().begin_parse();
-      }
-    } else {
-      if (prev == flag) {
-        prev = value;
-
-        builder use = base;
+      if (s.slice_refs_empty()) {
+        int plc = 1 << (prevs - 1);
         int ret = 0;
         int k = 0;
 
-        while (k < vals) {
+        builder use = base;
+        while (k < prevs) {
+          use~store_uint(prev & plc > 0, 1);
           prev <<= 1;
-          use~store_uint(prev & vlc > 0, 1);
-          prev -= prev & vlc;
           x += 1;
-          k += 1;
 
-          ;; check overflow
-          if (x >= 254) & (k < vals) {
+          ;; handle overflow
+          if (x >= 255) {
             use = begin_cell();
             ret = 1;
             x = 0;
@@ -95,42 +60,70 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         }
 
         if (ret) {
-          if (s.slice_empty?()) {
-            return base.store_ref(use.end_cell()).end_cell();
-          }
-
-          return base.store_ref(solve(
-            s, x, use,
-            0, 0,
-            flag, flags, flc,
-            value, vals, vlc
-          )).end_cell();
+          return base.store_ref(use.end_cell()).end_cell();
         }
 
-        prev = 0;
-        prevs = 0;
-      } else {
+        return base.end_cell();
+      }
+
+      s = s~load_ref().begin_parse();
+    }
+  } else {
+    if (prev == flag) {
+      ;; process
+      prev = value;
+      int ret = 0;
+      int k = 0;
+
+      builder use = base;
+      while (k < vals) {
+        use~store_uint(prev & vlc > 0, 1);
+        prev -= prev & vlc;
         prev <<= 1;
-        base~store_uint(prev & flc > 0, 1);
-        prev -= prev & flc;
-        prevs -= 1;
         x += 1;
 
-        if (x >= 254) {
-          return base.store_ref(
-            solve(
-              s, 0, begin_cell(),
-              prev, prevs,
-              flag, flags, flc,
-              value, vals, vlc
-            )
-          ).end_cell();
+        ;; handle overflow
+        if (x >= 255) {
+          use = begin_cell();
+          ret = 1;
+          x = 0;
         }
+      }
+
+      if (ret) {
+        return base.store_ref(solve(
+          s, x, use,
+          0, 0,
+          flag, flags, flc,
+          value, vals, vlc
+        )).end_cell();
+      }
+
+      prev = 0;
+      prevs = 0;
+    } else {
+      ;; load next
+      base~store_uint(prev & flc > 0, 1);
+      prev -= prev & flc;
+      x += 1;
+
+      ;; handle overflow
+      if (x >= 255) {
+        if (s.slice_empty?()) {
+          return base.end_cell();
+        }
+
+        return base.store_ref(solve(
+          s, 0, begin_cell(),
+          0, 0,
+          flag, flags, flc,
+          value, vals, vlc
+        )).end_cell();
       }
     }
   }
 
-  return base.end_cell();
+  return null();
 }
 
 ;; testable
@@ -142,8 +135,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   int flags = log2(flag);
   int vals = log2(value);
 
-  int flc = 1 << flags;
-  int vlc = 1 << vals;
+  int flc = 1 << (flags - 1);
+  int vlc = 1 << (vals - 1);
 
   return solve(
     linked_list.begin_parse(), 0, begin_cell(),
