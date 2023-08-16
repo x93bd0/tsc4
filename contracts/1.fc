@@ -10,8 +10,8 @@
 }
 
 forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
+forall X -> (tuple, ()) push_back(tuple tail, X head) asm "TPUSH";
+forall X -> (tuple, (X)) pop_back(tuple t) asm "TPOP";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
@@ -30,5 +30,5 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
         }
     }
 
-    return null();
+    return begin_cell().end_cell();
 }
