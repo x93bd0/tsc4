@@ -23,7 +23,7 @@ forall X -> (tuple) nop(X x) asm "NOP";
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple out = null();
+  tuple out = empty_tuple();
   int a = 0;
   int b = 1;
 
