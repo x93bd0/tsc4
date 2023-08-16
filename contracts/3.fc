@@ -16,14 +16,14 @@
 
 -}
 
-;; Fifth prototype
-
-() recv_internal() {
-}
+;; AwA
 
 (int) log2(int x) asm "UBITSIZE DEC";
 int slice_data_empty(slice s) asm "SDEMPTY";
 int slice_refs_empty(slice s) asm "SREMPTY";
+
+() recv_internal() {
+}
 
 (cell) solve(
   slice s,
@@ -39,24 +39,23 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       prev <<= diff;
       prevs += diff;
 
-      prev += s~load_uint(prevs);
+      prev += s~load_uint(diff);
       if (prevs != flags) {
-        if (s.slice_refs_empty()) {
-          int plc = 1 << (prevs - 1);
+        if (slice_refs_empty(s)) {
+          int plc = 1 << prevs;
           int k = 0;
 
           builder use = base;
           int ret = 0;
 
           while (k < prevs) {
+            prev <<= 1;
             use~store_uint(prev & plc > 0, 1);
             prev -= prev & plc;
-            prev <<= 1;
             x += 1;
             k += 1;
 
-            ;; handle overflow
-            if (x >= 255) {
+            if (x >= 254) & (k < prevs) {
               use = begin_cell();
               ret = 1;
               x = 0;
@@ -74,21 +73,21 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       }
     } else {
       if (prev == flag) {
-        ;; process
         prev = value;
+
+        builder use = base;
         int ret = 0;
         int k = 0;
 
-        builder use = base;
         while (k < vals) {
+          prev <<= 1;
           use~store_uint(prev & vlc > 0, 1);
           prev -= prev & vlc;
-          prev <<= 1;
           x += 1;
           k += 1;
 
-          ;; handle overflow
-          if (x >= 255) {
+          ;; check overflow
+          if (x >= 254) & (k < vals) {
             use = begin_cell();
             ret = 1;
             x = 0;
@@ -111,24 +110,21 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prev = 0;
         prevs = 0;
       } else {
-        ;; load next
+        prev <<= 1;
         base~store_uint(prev & flc > 0, 1);
         prev -= prev & flc;
         prevs -= 1;
         x += 1;
 
-        ;; handle overflow
         if (x >= 254) {
-          if (s.slice_empty?()) {
-            return base.end_cell();
-          }
-
-          return base.store_ref(solve(
-            s, 0, begin_cell(),
-            0, 0,
-            flag, flags, flc,
-            value, vals, vlc
-          )).end_cell();
+          return base.store_ref(
+            solve(
+              s, 0, begin_cell(),
+              prev, prevs,
+              flag, flags, flc,
+              value, vals, vlc
+            )
+          ).end_cell();
         }
       }
     }
@@ -146,8 +142,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   int flags = log2(flag);
   int vals = log2(value);
 
-  int flc = 1 << (flags - 1);
-  int vlc = 1 << (vals - 1);
+  int flc = 1 << flags;
+  int vlc = 1 << vals;
 
   return solve(
     linked_list.begin_parse(), 0, begin_cell(),
