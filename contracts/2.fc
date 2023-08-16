@@ -21,15 +21,15 @@
 }
 
 (int) tlen (tuple t) asm "TLEN";
-forall X -> (tuple, ()) push_back(tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
+forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
+forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
 	tuple matrixC = empty_tuple();
-	int n = tlen(matrixA);
-	int m = tlen(matrixB);
-	int p = tlen(matrixB.car());
+	int n = matrixA.tlen();
+	int m = matrixB.tlen();
+	int p = matrixB.at(0).tlen();
 	int i = 0;
 
 	while (i < n) {
@@ -45,11 +45,11 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 				k = k + 1;
 			}
 
-			temp~push_back(sum);
+			temp~tpush(sum);
 			j = j + 1;
 		}
 
-		matrixC~push_back(temp);
+		matrixC~tpush(temp);
 		i = i + 1;
 	}
 
