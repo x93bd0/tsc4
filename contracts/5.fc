@@ -45,7 +45,10 @@ forall X -> (tuple) nop(X x) asm "NOP";
 
     out~tpush(a);
   }
-  out~tpush(b);
+
+  if (k >= 2) {
+    out~tpush(b);
+  }
 
   return out;
 }
