@@ -44,7 +44,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
           if (prevs > 1022 - x) {
             builder next = begin_cell();
             int magic = (prevs - (1022 - x));
-            
+
             int v1 = prev >> magic;
             int v2 = prev - (v1 << magic);
 
@@ -65,8 +65,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs = 0;
         prev = 0;
 
-        if (vals > 1022 - x) {
-        {-
+        {-if (vals > 1022 - x) {
           builder next = begin_cell();
           int magic = (vals - (1022 - x));
 
@@ -82,11 +81,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
             flag, flags, flc,
             value, vals
           )).end_cell();
-        -}
-        } else {
+        } else { -}
           b~store_uint(value, vals);
           x += vals;
-        }
+        {--}
       } else {
         ;; remove left bit
         b~store_uint(prev & flc > 0, 1);
