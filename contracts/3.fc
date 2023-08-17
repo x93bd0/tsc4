@@ -92,7 +92,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs -= 1;
         x += 1;
 
-        if (x >= 1022) {
+        if (x >= 1023) {
           return b.store_ref(solve(
             s, 0, begin_cell(),
             prev, prevs,

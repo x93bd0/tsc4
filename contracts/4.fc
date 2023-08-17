@@ -79,12 +79,12 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       if (char < 97) {
         char = 123 - (97 - char);
       }
-    }
-
-    if (char >= 65) & (char <= 90) {  ;; may
-      char -= shift;
-      if (char < 65) {
-        char = 91 - (65 - char);
+    } else {
+      if (char >= 65) & (char <= 90) {  ;; may
+        char -= shift;
+        if (char < 65) {
+          char = 91 - (65 - char);
+        }
       }
     }
 
