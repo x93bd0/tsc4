@@ -33,7 +33,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   }
 
   while (~ s.slice_data_empty?()) {
-    int load = min(256, s.slice_bits());
+    int load = min(248, s.slice_bits());
     int chunk = s~load_uint(load);
     int chars = load / 8;
     int cr = 0xff << (load - 8);
@@ -80,7 +80,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   }
 
   while (~ s.slice_data_empty()) {
-    int load = min(256, s.slice_bits());
+    int load = min(248, s.slice_bits());
     int chunk = s~load_uint(load);
     int chars = load / 8;
     int cr = 0xff << (load - 8);
