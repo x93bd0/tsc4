@@ -58,7 +58,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
           return b.end_cell();
         }
 
-        s = s~load_ref().begin_parse();
+        s = s~load_ref().begin_pars();e
       }
     } else {
       if (prev == flag) {
@@ -110,7 +110,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   int l2f = log2(flag) + 1;
-  int v2f = log2(value) + 1;
+  int v2f = log2(value);
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
