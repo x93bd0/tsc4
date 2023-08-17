@@ -39,12 +39,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       if (char > 122) {
         char = 96 + (char - 122);
       }
-    } else {
-      if (char >= 65) & (char <= 90) {  ;; may
-        char += shift;
-        if (char > 90) {
-          char = 64 + (char - 90);
-        }
+    } elseif (char >= 65) & (char <= 90) {  ;; may
+      char += shift;
+      if (char > 90) {
+        char = 64 + (char - 90);
       }
     }
 
@@ -79,12 +77,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       if (char < 97) {
         char = 123 - (97 - char);
       }
-    } else {
-      if (char >= 65) & (char <= 90) {  ;; may
-        char -= shift;
-        if (char < 65) {
-          char = 91 - (65 - char);
-        }
+    } elseif (char >= 65) & (char <= 90) {  ;; may
+      char -= shift;
+      if (char < 65) {
+        char = 91 - (65 - char);
       }
     }
 
