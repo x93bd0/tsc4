@@ -29,7 +29,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   slice s, int x, builder b,
 
   int prev, int prevs,
-  int flag, int flags, int flc,
+  int flag, int flags,
   int value, int vals
 ) {
   while (1) {
@@ -77,8 +77,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
           return b.store_ref(solve(
             s, magic, next,
-            prev, prevs,
-            flag, flags, flc,
+            0, 0,
+            flag, flags,
             value, vals
           )).end_cell();
         } else {
@@ -91,14 +91,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         b~store_uint(lbits, prevs - (flags - 1));
         prev -= lbits << (flags - 1);
 
-        prevs -= prevs - (flags - 1);
+        prevs = log2(prev) + 1;
         x += 1;
 
         if (x >= 1023) {
           return b.store_ref(solve(
             s, 0, begin_cell(),
             prev, prevs,
-            flag, flags, flc,
+            flag, flags,
             value, vals
           )).end_cell();
         }
@@ -120,6 +120,6 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
-    flag, l2f, 1 << (l2f - 1),
+    flag, l2f,
     value, v2f);
 }
