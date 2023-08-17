@@ -33,29 +33,20 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   }
 
   while (~ s.slice_data_empty?()) {
-    int load = min(16, s.slice_bits());
-    int chunk = s~load_uint(load);
-    int chars = load / 8;
-    int cr = 0xff << (load - 8);
-
-    repeat (chars) {
-      int char = (chunk & cr) >> (load - 8);
-      chunk <<= 8;
-
-      if (char >= 97) & (char <= 122) { ;; min
-        char += shift;
-        if (char > 122) {
-          char = 96 + (char - 122);
-        }
-      } elseif (char >= 65) & (char <= 90) {  ;; may
-        char += shift;
-        if (char > 90) {
-          char = 64 + (char - 90);
-        }
+    int char = s~load_uint(8);
+    if (char >= 97) & (char <= 122) { ;; min
+      char += shift;
+      if (char > 122) {
+        char = 96 + (char - 122);
       }
-
-      c~store_uint(char, 8);
+    } elseif (char >= 65) & (char <= 90) {  ;; may
+      char += shift;
+      if (char > 90) {
+        char = 64 + (char - 90);
+      }
     }
+
+    c~store_uint(char, 8);
   }
 
   if (~ s.slice_refs_empty()) {
@@ -80,29 +71,20 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   }
 
   while (~ s.slice_data_empty()) {
-    int load = min(16, s.slice_bits());
-    int chunk = s~load_uint(load);
-    int chars = load / 8;
-    int cr = 0xff << (load - 8);
-
-    repeat (chars) {
-      int char = (chunk & cr) >> (load - 8);
-      chunk <<= 8;
-
-      if (char >= 97) & (char <= 122) { ;; min
-        char -= shift;
-        if (char < 97) {
-          char = 123 - (97 - char);
-        }
-      } elseif (char >= 65) & (char <= 90) {  ;; may
-        char -= shift;
-        if (char < 65) {
-          char = 91 - (65 - char);
-        }
+    int char = s~load_uint(8);
+    if (char >= 97) & (char <= 122) { ;; min
+      char -= shift;
+      if (char < 97) {
+        char = 123 - (97 - char);
       }
-
-      c~store_uint(char, 8);
+    } elseif (char >= 65) & (char <= 90) {  ;; may
+      char -= shift;
+      if (char < 65) {
+        char = 91 - (65 - char);
+      }
     }
+
+    c~store_uint(char, 8);
   }
 
   if (~ s.slice_refs_empty()) {

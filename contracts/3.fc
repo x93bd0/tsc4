@@ -109,6 +109,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  if (flag < 0) | (value < 0) {
+    return null();
+  }
+
   int l2f = log2(flag) + 1;
   int v2f = log2(value) + 1;
   ;; TODO: See log2(flag)
