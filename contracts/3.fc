@@ -96,7 +96,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
         int zc = prevs - (log2(prev) + 1);
         if (x >= 1023) {
-          cell next = begin_cell(zc);
+          cell next = begin_cell();
           next~store_uint(0, zc);
 
           prevs -= zc;
