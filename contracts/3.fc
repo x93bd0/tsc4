@@ -58,7 +58,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
           return b.end_cell();
         }
 
-        s = s~load_ref().begin_pars();e
+        s = s~load_ref().begin_pars();
       }
     } else {
       if (prev == flag) {
