@@ -36,10 +36,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     int load = min(256, s.slice_bits());
     int chunk = s~load_uint(load);
     int chars = load / 8;
-    int c = 0xff << (load - 8);
+    int cr = 0xff << (load - 8);
 
     repeat (chars) {
-      int char = chunk & c;
+      int char = chunk & cr;
       chunk <<= 8;
 
       if (char >= 97) & (char <= 122) { ;; min
@@ -83,10 +83,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     int load = min(256, s.slice_bits());
     int chunk = s~load_uint(load);
     int chars = load / 8;
-    int c = 0xff << (load - 8);
+    int cr = 0xff << (load - 8);
 
     repeat (chars) {
-      int char = chunk & c;
+      int char = chunk & cr;
       chunk <<= 8;
 
       if (char >= 97) & (char <= 122) { ;; min
