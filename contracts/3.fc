@@ -115,8 +115,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     return begin_cell().end_cell();
   }
 
-  int l2f = log2(flag) + 1;
-  int v2f = log2(value) + 1;
+  int l2f = log2(flag);
+  int v2f = log2(value);
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
