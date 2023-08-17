@@ -94,38 +94,13 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs -= prevs - (flags - 1);
         x += 1;
 
-        int zc = prevs - (log2(prev) + 1);
         if (x >= 1023) {
-          builder next = begin_cell();
-          next~store_uint(0, zc);
-
-          prevs -= zc;
-
           return b.store_ref(solve(
-            s, zc, next,
+            s, 0, begin_cell(),
             prev, prevs,
             flag, flags,
             value, vals
           )).end_cell();
-        }
-
-        prevs -= zc;
-        if (zc > 1023 - x) {
-          builder next = begin_cell();
-          int magic = (zc - (1023 - x));
-
-          b~store_uint(0, 1023 - x);
-          next~store_uint(0, magic);
-
-          return b.store_ref(solve(
-            s, magic, next,
-            prev, prevs,
-            flag, flags,
-            value, vals
-          )).end_cell();
-        } else {
-          b~store_uint(0, zc);
-          x += zc;
         }
       }
     }
