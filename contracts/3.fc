@@ -16,7 +16,7 @@
 
 -}
 
-;; OwO
+;; awa
 
 (int) log2(int x) asm "UBITSIZE DEC";
 int slice_data_empty(slice s) asm "SDEMPTY";
@@ -87,12 +87,12 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         }
       } else {
         ;; remove every left bits
-        int lbits = prev >> flags;
-        b~store_uint(lbits, prevs - flags);
-        prev -= lbits << flags;
+        int lbits = prev >> (flags - 1);
+        b~store_uint(lbits, prevs - (flags - 1));
+        prev -= lbits << (flags - 1);
 
-        prevs -= prevs - flags;
-        x += 1;
+        x += prevs - (flags - 1);
+        prevs -= prevs - (flags - 1);
 
         if (x >= 1023) {
           return b.store_ref(solve(
@@ -115,8 +115,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     return begin_cell().end_cell();
   }
 
-  int l2f = log2(flag);
-  int v2f = log2(value);
+  int l2f = log2(flag) + 1;
+  int v2f = log2(value) + 1;
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
