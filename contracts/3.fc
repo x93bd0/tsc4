@@ -91,15 +91,6 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prev -= (prev & flc) * flc;
         prevs -= 1;
         x += 1;
-
-        if (x >= 256) {
-          return b.store_ref(solve(
-            s, 0, begin_cell(),
-            prev, prevs,
-            flag, flags, flc,
-            value, vals
-          )).end_cell();
-        }
       }
     }
   }
