@@ -35,7 +35,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   while (1) {
     if (prevs < flags) {
       int diff = min(flags - prevs, slice_bits(s));
-      prevs = log2(prev) + 1;
+      prevs += diff;
       prev <<= diff;
       prev += s~load_uint(diff);
 
@@ -91,16 +91,41 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         b~store_uint(lbits, prevs - (flags - 1));
         prev -= lbits << (flags - 1);
 
-        prevs = log2(prev) + 1;
+        prevs -= prevs - (flags - 1);
         x += 1;
 
+        int zc = prevs - (log2(prev) + 1);
         if (x >= 1023) {
+          cell next = begin_cell(zc);
+          next~store_uint(0, zc);
+
+          prevs -= zc;
+
           return b.store_ref(solve(
-            s, 0, begin_cell(),
+            s, zc, next,
             prev, prevs,
             flag, flags,
             value, vals
           )).end_cell();
+        }
+
+        prevs -= zc;
+        if (zc > 1023 - x) {
+          builder next = begin_cell();
+          int magic = (zc - (1023 - x));
+
+          b~store_uint(0, 1023 - x);
+          next~store_uint(0, magic);
+
+          return b.store_ref(solve(
+            s, magic, next,
+            prev, prevs,
+            flag, flags,
+            value, vals
+          )).end_cell();
+        } else {
+          b~store_uint(0, zc);
+          x += zc;
         }
       }
     }
