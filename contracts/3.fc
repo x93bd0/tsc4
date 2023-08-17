@@ -87,11 +87,11 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         }
       } else {
         ;; remove every left bits
-        int lbits = prev >> (flags - 1);
-        b~store_uint(lbits, prevs - (flags - 1));
-        prev -= lbits << (flags - 1);
+        int lbits = prev >> flags;
+        b~store_uint(lbits, prevs - flags);
+        prev -= lbits << flags;
 
-        prevs -= prevs - (flags - 1);
+        prevs -= prevs - flags;
         x += 1;
 
         if (x >= 1023) {
