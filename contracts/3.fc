@@ -41,14 +41,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
       if (prevs != flags) {
         if (slice_refs_empty(s)) {
-          if (prevs > 1023 - x) {
+          if (prevs > 512 - x) {
             builder next = begin_cell();
-            int magic = (prevs - (1023 - x));
+            int magic = (prevs - (512 - x));
 
             int v1 = prev >> magic;
             int v2 = prev - (v1 << magic);
 
-            b~store_uint(v1, 1023 - x);
+            b~store_uint(v1, 512 - x);
             next~store_uint(v2, magic);
 
             return b.store_ref(next.end_cell()).end_cell();
@@ -65,14 +65,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs = 0;
         prev = 0;
 
-        if (vals > 1023 - x) {
+        if (vals > 512 - x) {
           builder next = begin_cell();
-          int magic = (vals - (1023 - x));
+          int magic = (vals - (512 - x));
 
           int v1 = value >> magic;
           int v2 = value - (v1 << magic);
 
-          b~store_uint(v1, 1023 - x);
+          b~store_uint(v1, 512 - x);
           next~store_uint(v2, magic);
 
           return b.store_ref(solve(
@@ -92,7 +92,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs -= 1;
         x += 1;
 
-        if (x >= 1023) {
+        if (x >= 512) {
           return b.store_ref(solve(
             s, 0, begin_cell(),
             prev, prevs,
