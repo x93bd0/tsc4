@@ -32,15 +32,15 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 	int p = matrixB.at(0).tlen();
 	int i = 0;
 
-	while (i < n) {
+	repeat (n) {
 		tuple temp = empty_tuple();
 		int j = 0;
 
-		while (j < p) {
+		repeat (p) {
 			int sum = 0;
 
 			int k = 0;
-			while (k < m) {
+			repeat (m) {
 				sum = sum + (matrixA.at(i).at(k) * matrixB.at(k).at(j));
 				k = k + 1;
 			}
