@@ -39,7 +39,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     int cr = 0xff << (load - 8);
 
     repeat (chars) {
-      int char = chunk & cr;
+      int char = (chunk & cr) >> (load - 8);
       chunk <<= 8;
 
       if (char >= 97) & (char <= 122) { ;; min
