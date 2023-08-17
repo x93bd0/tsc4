@@ -88,11 +88,13 @@ int slice_refs_empty(slice s) asm "SREMPTY";
       } else {
         ;; remove every left bits
         int lbits = prev >> (flags - 1);
-        b~store_uint(lbits, prevs - (flags - 1));
+        int size = prevs - (flags - 1);
+
+        b~store_uint(lbits, size);
         prev -= lbits << (flags - 1);
 
-        x += prevs - (flags - 1);
-        prevs -= prevs - (flags - 1);
+        x += size;
+        prevs -= size;
 
         if (x >= 1023) {
           return b.store_ref(solve(
@@ -115,8 +117,17 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     return begin_cell().end_cell();
   }
 
-  int l2f = log2(flag) + 1;
-  int v2f = log2(value) + 1;
+  int l2f = log2(flag);
+  int v2f = log2(value);
+
+  if (flag == 0) {
+    l2f += 1;
+  }
+
+  if (value == 0) {
+    v2f += 1;
+  }
+
   ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
     0, 0,
