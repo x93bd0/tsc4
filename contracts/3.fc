@@ -35,7 +35,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   while (1) {
     if (prevs < flags) {
       int diff = min(flags - prevs, slice_bits(s));
-      prevs += diff;
+      prevs = log2(prev) + 1;
       prev <<= diff;
       prev += s~load_uint(diff);
 
