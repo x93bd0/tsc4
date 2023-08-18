@@ -32,17 +32,12 @@ forall X -> (tuple) nop(X x) asm "NOP";
   int b = 1;
 
   repeat (n) {
-    int c = a + b;
-    a = b;
-    b = c;
+    (a, b) = (b, a + b);
   }
 
   out~tpush(a);
   repeat (k - 2) {
-    int c = a + b;
-    a = b;
-    b = c;
-
+    (a, b) = (b, a + b);
     out~tpush(a);
   }
 
