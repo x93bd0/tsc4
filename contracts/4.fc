@@ -18,18 +18,14 @@ forall X -> (tuple, (X)) pop_back(tuple t) asm "UNCONS";
 int slice_data_empty(slice s) asm "SDEMPTY";
 int slice_refs_empty(slice s) asm "SREMPTY";
 
-(cell) solve_encrypt(int shift, cell text, int flag) method_id {
+;; testable
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
   shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
-  }
-
-  if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
   }
 
   do {
@@ -50,24 +46,20 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
-    return c.store_ref(solve_encrypt(shift, s~load_ref(), 0)).end_cell();
+    return c.store_ref(caesar_cipher_encrypt(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
 }
 
-(cell) solve_decrypt(int shift, cell text, int flag) method_id {
+;; testable
+(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
 
   shift -= (shift / 26) * 26;
   if (shift == 0) {
     return text;
-  }
-
-  if (flag) {
-    int prefix = s~load_uint(32);
-    c~store_uint(prefix, 32);
   }
 
   do {
@@ -88,18 +80,8 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
-    return c.store_ref(solve_decrypt(shift, s~load_ref(), 0)).end_cell();
+    return c.store_ref(caesar_cipher_decrypt(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
-}
-
-;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return solve_encrypt(shift,text, 0);
-}
-
-;; testable
-(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return solve_decrypt(shift, text, 0);
 }
