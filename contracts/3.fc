@@ -41,14 +41,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
       if (prevs != flags) {
         if (slice_refs_empty(s)) {
-          if (prevs > 63 - x) {
+          if (prevs > 127 - x) {
             builder next = begin_cell();
-            int magic = (prevs - (63 - x));
+            int magic = (prevs - (127 - x));
 
             int v1 = prev >> magic;
             int v2 = prev - (v1 << magic);
 
-            b~store_uint(v1, 63 - x);
+            b~store_uint(v1, 127 - x);
             next~store_uint(v2, magic);
 
             return b.store_ref(next.end_cell()).end_cell();
@@ -65,14 +65,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs = 0;
         prev = 0;
 
-        if (vals > 63 - x) {
+        if (vals > 127 - x) {
           builder next = begin_cell();
-          int magic = (vals - (63 - x));
+          int magic = (vals - (127 - x));
 
           int v1 = value >> magic;
           int v2 = value - (v1 << magic);
 
-          b~store_uint(v1, 63 - x);
+          b~store_uint(v1, 127 - x);
           next~store_uint(v2, magic);
 
           return b.store_ref(solve(
@@ -81,9 +81,10 @@ int slice_refs_empty(slice s) asm "SREMPTY";
                   flag, flags,
                   value, vals
           )).end_cell();
-        } else {
-          b~store_uint(value, vals);
-          x += vals;
+        }
+
+        b~store_uint(value, vals);
+        x += vals;
         }
       } else {
         ;; remove every left bits
@@ -96,7 +97,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         x += size;
         prevs -= size;
 
-        if (x >= 63) {
+        if (x >= 127) {
           return b.store_ref(solve(
                   s, 0, begin_cell(),
                   prev, prevs,
