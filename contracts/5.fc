@@ -21,29 +21,26 @@ forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple) nop(X x) asm "NOP";
 
+(tuple) hi_fib(int n, int k) asm """
+  NIL
+  SWAP
+  0 EQINT
+  IFJMP:<{
+    NIP
+  }>
+  0 PUSHINT
+  1 PUSHINT
+  s0 s3 XCHG
+  REPEAT:<{
+    s2 PUSH
+    ADD
+    s0 s2 XCHG
+  }>
+  DROP
+  NIP
+""";
+
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple out = empty_tuple();
-  if (k == 0) {
-    return out;
-  }
-
-  int a = 0;
-  int b = 1;
-
-  repeat (n) {
-    (b, a) = (a + b, b);
-  }
-
-  out~tpush(a);
-  repeat (k - 2) {
-    (b, a) = (a + b, b);
-    out~tpush(a);
-  }
-
-  if (k >= 2) {
-    out~tpush(b);
-  }
-
-  return out;
+  return hi_fib(n, k);
 }
