@@ -35,15 +35,11 @@ forall X -> (tuple) nop(X x) asm "NOP";
     (a, b) = (b, a + b);
   }
 
-  out~tpush(a);
   repeat (k - 2) {
-    (a, b) = (b, a + b);
     out~tpush(a);
+    (a, b) = (b, a + b);
   }
 
-  if (k >= 2) {
-    out~tpush(b);
-  }
-
+  out~tpush(b);
   return out;
 }
