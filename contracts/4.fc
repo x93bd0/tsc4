@@ -32,7 +32,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     c~store_uint(prefix, 32);
   }
 
-  while (~ s.slice_data_empty?()) {
+  do {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char += shift;
@@ -47,7 +47,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     }
 
     c~store_uint(char, 8);
-  }
+  } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
     return c.store_ref(solve_encrypt(shift, s~load_ref(), 0)).end_cell();
@@ -70,7 +70,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     c~store_uint(prefix, 32);
   }
 
-  while (~ s.slice_data_empty()) {
+  do {
     int char = s~load_uint(8);
     if (char >= 97) & (char <= 122) { ;; min
       char -= shift;
@@ -85,7 +85,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     }
 
     c~store_uint(char, 8);
-  }
+  } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
     return c.store_ref(solve_decrypt(shift, s~load_ref(), 0)).end_cell();
