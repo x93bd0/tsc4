@@ -18,7 +18,7 @@
 
 ;; awa
 
-(int) log2(int x) asm "UBITSIZE";
+(int) ubitsite(int x) asm "UBITSIZE";
 int slice_data_empty(slice s) asm "SDEMPTY";
 int slice_refs_empty(slice s) asm "SREMPTY";
 
@@ -26,11 +26,11 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 }
 
 (cell) solve(
-  slice s, int x, builder b,
+        slice s, int x, builder b,
 
-  int prev, int prevs,
-  int flag, int flags,
-  int value, int vals
+        int prev, int prevs,
+        int flag, int flags,
+        int value, int vals
 ) {
   while (1) {
     if (prevs < flags) {
@@ -41,14 +41,14 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
       if (prevs != flags) {
         if (slice_refs_empty(s)) {
-          if (prevs > 1023 - x) {
+          if (prevs > 127 - x) {
             builder next = begin_cell();
-            int magic = (prevs - (1023 - x));
+            int magic = (prevs - (127 - x));
 
             int v1 = prev >> magic;
             int v2 = prev - (v1 << magic);
 
-            b~store_uint(v1, 1023 - x);
+            b~store_uint(v1, 127 - x);
             next~store_uint(v2, magic);
 
             return b.store_ref(next.end_cell()).end_cell();
@@ -65,21 +65,21 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         prevs = 0;
         prev = 0;
 
-        if (vals > 1023 - x) {
+        if (vals > 127 - x) {
           builder next = begin_cell();
-          int magic = (vals - (1023 - x));
+          int magic = (vals - (127 - x));
 
           int v1 = value >> magic;
           int v2 = value - (v1 << magic);
 
-          b~store_uint(v1, 1023 - x);
+          b~store_uint(v1, 127 - x);
           next~store_uint(v2, magic);
 
           return b.store_ref(solve(
-            s, magic, next,
-            0, 0,
-            flag, flags,
-            value, vals
+                  s, magic, next,
+                  0, 0,
+                  flag, flags,
+                  value, vals
           )).end_cell();
         } else {
           b~store_uint(value, vals);
@@ -96,12 +96,12 @@ int slice_refs_empty(slice s) asm "SREMPTY";
         x += size;
         prevs -= size;
 
-        if (x >= 1023) {
+        if (x >= 127) {
           return b.store_ref(solve(
-            s, 0, begin_cell(),
-            prev, prevs,
-            flag, flags,
-            value, vals
+                  s, 0, begin_cell(),
+                  prev, prevs,
+                  flag, flags,
+                  value, vals
           )).end_cell();
         }
       }
@@ -113,24 +113,12 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  if (flag < 0) | (value < 0) {
-    return begin_cell().end_cell();
-  }
 
-  int l2f = log2(flag);
-  int v2f = log2(value);
+  int flag_size = ubitsite(flag);
+  int value_size = ubitsite(value);
 
-  if (flag == 0) {
-    l2f += 1;
-  }
-
-  if (value == 0) {
-    v2f += 1;
-  }
-
-  ;; TODO: See log2(flag)
   return solve(linked_list.begin_parse(), 0, begin_cell(),
-    0, 0,
-    flag, l2f,
-    value, v2f);
+          0, 0,
+          flag, flag_size,
+          value, value_size);
 }
