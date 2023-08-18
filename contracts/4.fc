@@ -19,14 +19,9 @@ int slice_data_empty(slice s) asm "SDEMPTY";
 int slice_refs_empty(slice s) asm "SREMPTY";
 
 ;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(cell) cce(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
-
-  shift -= (shift / 26) * 26;
-  if (shift == 0) {
-    return text;
-  }
 
   do {
     int char = s~load_uint(8);
@@ -46,21 +41,16 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
-    return c.store_ref(caesar_cipher_encrypt(shift, s~load_ref())).end_cell();
+    return c.store_ref(cce(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
 }
 
 ;; testable
-(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+(cell) ccd(int shift, cell text) method_id {
   builder c = begin_cell();
   slice s = text.begin_parse();
-
-  shift -= (shift / 26) * 26;
-  if (shift == 0) {
-    return text;
-  }
 
   do {
     int char = s~load_uint(8);
@@ -80,8 +70,26 @@ int slice_refs_empty(slice s) asm "SREMPTY";
   } until (s.slice_data_empty?());
 
   if (~ s.slice_refs_empty()) {
-    return c.store_ref(caesar_cipher_decrypt(shift, s~load_ref())).end_cell();
+    return c.store_ref(ccd(shift, s~load_ref())).end_cell();
   }
 
   return c.end_cell();
+}
+
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+  shift -= (shift / 26) * 26;
+  if (shift == 0) {
+    return text;
+  }
+
+  return cce(shift, cell);
+}
+
+(cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+  shift -= (shift / 26) * 26;
+  if (shift == 0) {
+    return text;
+  }
+
+  return ccd(shift, text);
 }
