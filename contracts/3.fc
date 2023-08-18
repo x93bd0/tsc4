@@ -85,7 +85,6 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
         b~store_uint(value, vals);
         x += vals;
-        }
       } else {
         ;; remove every left bits
         int lbits = prev >> (flags - 1);
