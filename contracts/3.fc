@@ -67,7 +67,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
 
         if (vals > 511 - x) {
           builder next = begin_cell();
-          int magic = (vals - (511 - x));1
+          int magic = (vals - (511 - x));
 
           int v1 = value >> magic;
           int v2 = value - (v1 << magic);
