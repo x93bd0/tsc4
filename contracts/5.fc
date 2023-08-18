@@ -23,21 +23,39 @@ forall X -> (tuple) nop(X x) asm "NOP";
 
 (tuple) hi_fib(int n, int k) asm """
   NIL
-  SWAP
+  OVER
   0 EQINT
   IFJMP:<{
-    NIP
+    2 1 BLKDROP2
   }>
   0 PUSHINT
   1 PUSHINT
-  s0 s3 XCHG
+  s0 s4 XCHG
   REPEAT:<{
-    s2 PUSH
+    s3 PUSH
     ADD
-    s0 s2 XCHG
+    s0 s3 XCHG
   }>
-  DROP
+  TUCK
+  TPUSH
+  s2 PUSH
+  -2 ADDCONST
+  REPEAT:<{
+    s1 s3 XCPU
+    ADD
+    s1 s3 XCPU
+    TPUSH
+    s1 s3 XCHG
+  }>
   NIP
+  SWAP
+  1 GTINT
+  IF:<{
+    SWAP
+    TPUSH
+  }>ELSE<{
+    NIP
+  }>
 """;
 
 ;; testable
