@@ -82,7 +82,7 @@ int slice_refs_empty(slice s) asm "SREMPTY";
     return text;
   }
 
-  return cce(shift, cell);
+  return cce(shift, text);
 }
 
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
